@@ -1,0 +1,151 @@
+{
+  "$defs": {
+    "JsonValue": {},
+    "RightsStatus": {
+      "enum": [
+        "unknown",
+        "cleared",
+        "restricted"
+      ],
+      "title": "RightsStatus",
+      "type": "string"
+    },
+    "SourceInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "source_name": {
+          "minLength": 1,
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_record_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Record Id"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "license": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License"
+        },
+        "rights_status": {
+          "$ref": "#/$defs/RightsStatus",
+          "default": "unknown"
+        }
+      },
+      "required": [
+        "source_name"
+      ],
+      "title": "SourceInfo",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "dataset_id": {
+      "minLength": 1,
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "version": {
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Description"
+    },
+    "default_language": {
+      "default": "ja",
+      "minLength": 1,
+      "title": "Default Language",
+      "type": "string"
+    },
+    "license": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "License"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceInfo"
+    },
+    "manifest": {
+      "minLength": 1,
+      "title": "Manifest",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "dataset_id",
+    "name",
+    "version",
+    "source",
+    "manifest"
+  ],
+  "title": "DatasetMetadata",
+  "type": "object"
+}

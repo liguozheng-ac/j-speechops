@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "j-speech-ops"
+version = "0.7.0"
+description = "Japanese Speech Data & TTS Operations Pipeline — Stage 7 TTS text curation"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.7,<3",
+    "silero-vad>=6.2,<6.3",
+    "soundfile>=0.14,<1",
+    "torch>=2.9,<2.10",
+    "torchaudio>=2.9,<2.10",
+    # silero-vad 6.2.2 imports its sequence API at package import time.
+    "onnxruntime>=1.30,<2",
+    "faster-whisper>=1.2,<2",
+    "jaconv==0.5.0",
+    "pyopenjtalk-plus==0.4.1.post9",
+    "nvidia-cublas-cu12>=12.9,<13; platform_system == 'Windows'",
+    "nvidia-cudnn-cu12>=9.26,<10; platform_system == 'Windows'",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<10",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: executes the installed Silero model",
+    "gpu_integration: executes large-v3 on a real Japanese speech sample using CUDA",
+]

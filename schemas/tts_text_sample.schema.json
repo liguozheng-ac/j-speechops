@@ -1,0 +1,263 @@
+{
+  "$defs": {
+    "CurationDecision": {
+      "enum": [
+        "undecided",
+        "pass",
+        "review",
+        "drop"
+      ],
+      "title": "CurationDecision",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "RightsStatus": {
+      "enum": [
+        "unknown",
+        "cleared",
+        "restricted"
+      ],
+      "title": "RightsStatus",
+      "type": "string"
+    },
+    "TTSIntendedUse": {
+      "enum": [
+        "tts_production",
+        "benchmark",
+        "demo",
+        "application",
+        "unknown"
+      ],
+      "title": "TTSIntendedUse",
+      "type": "string"
+    },
+    "TTSTextContent": {
+      "additionalProperties": false,
+      "properties": {
+        "raw_text": {
+          "minLength": 1,
+          "title": "Raw Text",
+          "type": "string"
+        },
+        "normalized_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Normalized Text"
+        },
+        "reading_kana": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reading Kana"
+        },
+        "phonemes": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Phonemes"
+        }
+      },
+      "required": [
+        "raw_text"
+      ],
+      "title": "TTSTextContent",
+      "type": "object"
+    },
+    "TTSTextSource": {
+      "additionalProperties": false,
+      "properties": {
+        "source_type": {
+          "$ref": "#/$defs/TextSourceType",
+          "default": "unknown"
+        },
+        "source_name": {
+          "minLength": 1,
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Id"
+        },
+        "source_path": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Path"
+        }
+      },
+      "required": [
+        "source_name"
+      ],
+      "title": "TTSTextSource",
+      "type": "object"
+    },
+    "TTSTextStage": {
+      "enum": [
+        "raw",
+        "normalized",
+        "reading_prepared",
+        "curated"
+      ],
+      "title": "TTSTextStage",
+      "type": "string"
+    },
+    "TTSTextState": {
+      "additionalProperties": false,
+      "properties": {
+        "stage": {
+          "$ref": "#/$defs/TTSTextStage",
+          "default": "raw"
+        },
+        "curation_decision": {
+          "$ref": "#/$defs/CurationDecision",
+          "default": "undecided"
+        },
+        "decision_reasons": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Decision Reasons",
+          "type": "array"
+        }
+      },
+      "title": "TTSTextState",
+      "type": "object"
+    },
+    "TextSourceType": {
+      "enum": [
+        "manual",
+        "file",
+        "dataset",
+        "application",
+        "generated",
+        "unknown"
+      ],
+      "title": "TextSourceType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Canonical input text, deliberately unrelated to SpeechSample inheritance.",
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sample_id": {
+      "minLength": 1,
+      "title": "Sample Id",
+      "type": "string"
+    },
+    "dataset_id": {
+      "minLength": 1,
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "language": {
+      "default": "ja",
+      "minLength": 1,
+      "title": "Language",
+      "type": "string"
+    },
+    "locale": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": "ja-JP",
+      "title": "Locale"
+    },
+    "text": {
+      "$ref": "#/$defs/TTSTextContent"
+    },
+    "source": {
+      "$ref": "#/$defs/TTSTextSource"
+    },
+    "rights_status": {
+      "$ref": "#/$defs/RightsStatus",
+      "default": "unknown"
+    },
+    "intended_use": {
+      "$ref": "#/$defs/TTSIntendedUse",
+      "default": "unknown"
+    },
+    "domain": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Domain"
+    },
+    "state": {
+      "$ref": "#/$defs/TTSTextState"
+    },
+    "metadata": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "sample_id",
+    "dataset_id",
+    "text",
+    "source"
+  ],
+  "title": "TTSTextSample",
+  "type": "object"
+}

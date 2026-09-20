@@ -1,0 +1,24 @@
+{
+  "version": "stage7-demo-v1",
+  "source": "J-SpeechOps example/demo pronunciation risks; not a comprehensive Japanese name dictionary",
+  "entries": [
+    {
+      "surface": "佐伯",
+      "category": "proper_name",
+      "reason": "multiple_readings_possible",
+      "note": "Example proper-name ambiguity for the Stage 7 human-review route."
+    },
+    {
+      "surface": "ABCホテル",
+      "category": "brand_name",
+      "reason": "approved_reading_not_configured",
+      "note": "Fictional example brand entry; confirm the product-approved reading."
+    },
+    {
+      "surface": "東西サービス",
+      "category": "organization_name",
+      "reason": "organization_reading_requires_confirmation",
+      "note": "Example organization entry for demonstrating project-maintained risk routing."
+    }
+  ]
+}

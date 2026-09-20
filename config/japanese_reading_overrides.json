@@ -1,0 +1,18 @@
+{
+  "version": "stage6-reviewed-v1",
+  "source": "J-SpeechOps project pronunciation overrides",
+  "overrides": [
+    {
+      "surface": "JR",
+      "reading_kana": "ジェイアール"
+    },
+    {
+      "surface": "Wi-Fi",
+      "reading_kana": "ワイファイ"
+    },
+    {
+      "surface": "ChatGPT",
+      "reading_kana": "チャットジーピーティー"
+    }
+  ]
+}

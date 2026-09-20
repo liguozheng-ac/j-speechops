@@ -1,0 +1,404 @@
+{
+  "$defs": {
+    "AudioInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "format": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Format"
+        },
+        "duration_sec": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration Sec"
+        },
+        "sample_rate_hz": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sample Rate Hz"
+        },
+        "channels": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Channels"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "title": "AudioInfo",
+      "type": "object"
+    },
+    "CurationDecision": {
+      "enum": [
+        "undecided",
+        "pass",
+        "review",
+        "drop"
+      ],
+      "title": "CurationDecision",
+      "type": "string"
+    },
+    "DatasetSplit": {
+      "enum": [
+        "unsplit",
+        "train",
+        "validation",
+        "test",
+        "benchmark"
+      ],
+      "title": "DatasetSplit",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "LineageInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "parent_sample_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Sample Id"
+        },
+        "segment_start_sec": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Segment Start Sec"
+        },
+        "segment_end_sec": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Segment End Sec"
+        }
+      },
+      "title": "LineageInfo",
+      "type": "object"
+    },
+    "ProcessingStage": {
+      "enum": [
+        "ingested",
+        "audio_prepared",
+        "transcribed",
+        "text_prepared",
+        "curated"
+      ],
+      "title": "ProcessingStage",
+      "type": "string"
+    },
+    "ProcessingState": {
+      "additionalProperties": false,
+      "properties": {
+        "stage": {
+          "$ref": "#/$defs/ProcessingStage",
+          "default": "ingested"
+        },
+        "curation_decision": {
+          "$ref": "#/$defs/CurationDecision",
+          "default": "undecided"
+        },
+        "decision_reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Decision Reasons",
+          "type": "array"
+        }
+      },
+      "title": "ProcessingState",
+      "type": "object"
+    },
+    "RightsStatus": {
+      "enum": [
+        "unknown",
+        "cleared",
+        "restricted"
+      ],
+      "title": "RightsStatus",
+      "type": "string"
+    },
+    "SourceInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "source_name": {
+          "minLength": 1,
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_record_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Record Id"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "license": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License"
+        },
+        "rights_status": {
+          "$ref": "#/$defs/RightsStatus",
+          "default": "unknown"
+        }
+      },
+      "required": [
+        "source_name"
+      ],
+      "title": "SourceInfo",
+      "type": "object"
+    },
+    "SpeakerInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "speaker_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Speaker Id"
+        }
+      },
+      "title": "SpeakerInfo",
+      "type": "object"
+    },
+    "TextInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "reference_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reference Text"
+        },
+        "asr_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Asr Text"
+        },
+        "normalized_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Normalized Text"
+        },
+        "reading_kana": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reading Kana"
+        },
+        "phonemes": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Phonemes"
+        }
+      },
+      "title": "TextInfo",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sample_id": {
+      "minLength": 1,
+      "title": "Sample Id",
+      "type": "string"
+    },
+    "dataset_id": {
+      "minLength": 1,
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "language": {
+      "default": "ja",
+      "minLength": 1,
+      "title": "Language",
+      "type": "string"
+    },
+    "locale": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": "ja-JP",
+      "title": "Locale"
+    },
+    "audio": {
+      "$ref": "#/$defs/AudioInfo"
+    },
+    "text": {
+      "$ref": "#/$defs/TextInfo"
+    },
+    "speaker": {
+      "$ref": "#/$defs/SpeakerInfo"
+    },
+    "source": {
+      "$ref": "#/$defs/SourceInfo"
+    },
+    "lineage": {
+      "$ref": "#/$defs/LineageInfo"
+    },
+    "split": {
+      "$ref": "#/$defs/DatasetSplit",
+      "default": "unsplit"
+    },
+    "state": {
+      "$ref": "#/$defs/ProcessingState"
+    },
+    "metadata": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "sample_id",
+    "dataset_id",
+    "audio",
+    "source"
+  ],
+  "title": "SpeechSample",
+  "type": "object"
+}

@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+.venv-tts/
+venv/
+dist/
+build/
+work/
+outputs/
+.cache/
+
+# Local speech data and generated artifacts. Small fixtures under tests/ remain trackable.
+data/audio/
+data/raw/
+data/interim/
+data/processed/
+data/manifests/
+data/reports/
+models/
+checkpoints/
+outputs/audio/
+*.ckpt
+*.pt
+*.pth
+*.safetensors

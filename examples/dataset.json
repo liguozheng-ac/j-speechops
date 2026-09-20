@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "j-speech-ops-demo",
+  "name": "J-SpeechOps Stage 1 Example",
+  "version": "1.0.0",
+  "description": "Three records demonstrating a complete sample, an ingested sample, and segmentation lineage.",
+  "default_language": "ja",
+  "license": "CC-BY-4.0",
+  "source": {
+    "source_name": "J-SpeechOps Stage 1 example",
+    "source_record_id": null,
+    "source_url": null,
+    "license": "CC-BY-4.0",
+    "rights_status": "cleared"
+  },
+  "manifest": "sample_manifest.jsonl",
+  "metadata": {
+    "purpose": "schema demonstration",
+    "record_count": 3
+  }
+}
+
