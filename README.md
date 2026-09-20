@@ -79,9 +79,11 @@ This produces `data/manifests/audio_segments.jsonl` for Stage 3.
     --dataset-root . `
     --output-dir data `
     --model large-v3 `
+    --model-path D:\AI-Models\Whisper\faster-whisper-large-v3 `
     --device cuda `
     --compute-type float16 `
-    --language ja
+    --language ja `
+    --local-files-only
 ```
 
 Outputs are rewritten on each run:
@@ -91,7 +93,7 @@ data/manifests/transcribed_segments.jsonl
 data/reports/asr_run_report.jsonl
 ```
 
-An existing `transcribed` record is skipped by default. `--force` explicitly reruns ASR without moving lifecycle state backward. Faster-whisper internal VAD is always disabled because Stage 2 already owns segmentation.
+`--model-path` selects the stable external CTranslate2 model directory explicitly; it is mutually exclusive with the legacy Hugging Face `--download-root` cache option. `--local-files-only` prevents downloads. An existing `transcribed` record is skipped by default. `--force` explicitly reruns ASR without moving lifecycle state backward. Faster-whisper internal VAD is always disabled because Stage 2 already owns segmentation.
 
 ## Stage 4 CLI
 

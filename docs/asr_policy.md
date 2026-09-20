@@ -5,6 +5,7 @@
 | Setting | Value |
 |---|---|
 | Model | Whisper `large-v3` |
+| Model source | Explicit local CTranslate2 directory; configurable with `--model-path` |
 | Backend | faster-whisper / CTranslate2 |
 | Device | `cuda:0` |
 | Compute type | `float16` |
@@ -14,6 +15,8 @@
 | Condition on previous text | `false` |
 | Word timestamps | `false` |
 | faster-whisper VAD | `false` |
+
+The verified stable local model root is `D:\AI-Models\Whisper\faster-whisper-large-v3`. This location is documentation and deployment configuration, not a hardcoded source default. `--local-files-only` is required for offline validation.
 
 Language detection metadata may be recorded by the backend, but decoding is explicitly constrained to Japanese. Stage 2 already supplies speech-only segments, so enabling faster-whisper VAD would duplicate responsibility and could change established lineage boundaries.
 
@@ -50,4 +53,3 @@ Data failures remain in the output manifest for auditability and are marked `dro
 ## Evaluation boundary
 
 Stage 3 records transcripts and operational evidence only. It does not compute CER, WER, Kana-CER, normalized scores, rankings, or acceptance thresholds—even when reference text exists.
-

@@ -6,11 +6,7 @@
 D:\AI-Projects\J-SpeechOps
 ```
 
-All Stage 8 and later development must use this directory. The former Codex workspace remains available only as a retained backup and external model-cache location:
-
-```text
-<temporary-codex-workspace>
-```
+All Stage 8 and later development must use this directory. The former Codex workspace remains available only as a retained backup. Stage 8.1 copied the retained Whisper snapshot to the stable external model root documented in `stage8_1_model_relocation.md`, so the old workspace is no longer an execution dependency.
 
 The old workspace was not deleted.
 
@@ -18,13 +14,13 @@ The old workspace was not deleted.
 
 The project was copied rather than moved. Source, tests, documentation, configuration, examples, schemas, data documentation, generated smoke outputs, small work fixtures, and `.git` metadata were copied. The old Windows `.venv` was excluded and rebuilt from `pyproject.toml` with Python 3.14.7.
 
-The 2.88 GiB Hugging Face-format `Systran/faster-whisper-large-v3` cache was intentionally not duplicated. GPU validation from the canonical root reused this retained cache with `local_files_only=1`:
+At the time of Stage 7.5, the 2.88 GiB Hugging Face-format `Systran/faster-whisper-large-v3` cache was intentionally not duplicated and GPU validation temporarily reused the retained cache. Stage 8.1 supersedes that temporary arrangement with:
 
 ```text
-<temporary-codex-workspace>\work\stage3_models
+D:\AI-Models\Whisper\faster-whisper-large-v3
 ```
 
-No model was moved, deleted, or downloaded.
+No model was downloaded or deleted.
 
 ## Verification baseline
 

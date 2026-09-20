@@ -11,7 +11,7 @@ Versions below are the packages resolved in the verified Windows/Python 3.14.7 e
 | ONNX Runtime | 1.30.0 | Import-time compatibility dependency of silero-vad 6.2.2 sequence API | https://onnxruntime.ai | MIT | Borrow (compatibility only) |
 | faster-whisper | 1.2.1 | Whisper inference API and feature/decoding pipeline | https://github.com/SYSTRAN/faster-whisper | MIT | Borrow |
 | CTranslate2 | 4.8.2 | CUDA inference runtime | https://opennmt.net/CTranslate2/ | MIT | Borrow |
-| Whisper large-v3 conversion | `Systran/faster-whisper-large-v3` | Stage 3 Japanese baseline model | https://huggingface.co/Systran/faster-whisper-large-v3 | MIT | Borrow |
+| Whisper large-v3 conversion | `Systran/faster-whisper-large-v3` | Stage 3 Japanese baseline model, stored externally under `D:\AI-Models\Whisper` | https://huggingface.co/Systran/faster-whisper-large-v3 | MIT | Borrow |
 | NVIDIA cuBLAS CUDA 12 | 12.9.2.10 | Windows GPU matrix operations required by CTranslate2 | https://developer.nvidia.com/cuda-zone | NVIDIA software license | Borrow |
 | NVIDIA cuDNN CUDA 12 | 9.26.0.51 | Windows GPU neural-network runtime required by CTranslate2 | https://developer.nvidia.com/cudnn | NVIDIA software license | Borrow |
 | jaconv | 0.5.0 | Unicode, width, Kana, and selected punctuation normalization | https://github.com/ikegami-yukino/jaconv | MIT | Borrow |

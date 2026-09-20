@@ -10,6 +10,7 @@ from j_speech_ops.asr import (
     ASRInfrastructureError,
     FasterWhisperAdapter,
 )
+from j_speech_ops.asr_transcribe import build_parser
 
 
 class FakeWhisperModel:
@@ -62,6 +63,8 @@ def test_asr_config_fixes_japanese_cuda_policy() -> None:
         ASRConfig(vad_filter=True)
     with pytest.raises(ValidationError):
         ASRConfig(model_name="small")
+    with pytest.raises(ValidationError, match="mutually exclusive"):
+        ASRConfig(model_path="D:/models/whisper", download_root="D:/cache")
 
 
 def test_faster_whisper_adapter_loads_once_and_maps_result(
@@ -75,6 +78,7 @@ def test_faster_whisper_adapter_loads_once_and_maps_result(
     second = adapter.transcribe(Path("second.wav"))
 
     assert len(FakeWhisperModel.init_calls) == 1
+    assert FakeWhisperModel.init_calls[0][0][0] == "large-v3"
     assert first.text == "今日は晴れです。"
     assert first.language == "ja"
     assert first.segments[0].start_sec == 0.0
@@ -84,6 +88,42 @@ def test_faster_whisper_adapter_loads_once_and_maps_result(
     _, kwargs = adapter._model.transcribe_calls[0]
     assert kwargs["language"] == "ja"
     assert kwargs["vad_filter"] is False
+
+
+def test_explicit_local_model_path_is_forwarded_without_download(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    patch_cuda(monkeypatch)
+    model_path = tmp_path / "faster-whisper-large-v3"
+    model_path.mkdir()
+    FakeWhisperModel.init_calls.clear()
+
+    adapter = FasterWhisperAdapter(
+        ASRConfig(model_path=str(model_path), local_files_only=True),
+        model_factory=FakeWhisperModel,
+    )
+
+    args, kwargs = FakeWhisperModel.init_calls[0]
+    assert args == (str(model_path),)
+    assert kwargs["local_files_only"] is True
+    assert kwargs["download_root"] is None
+    assert adapter.runtime_info.effective_config["model_path"] == str(model_path)
+
+
+def test_asr_cli_exposes_explicit_model_path() -> None:
+    args = build_parser().parse_args(
+        [
+            "--manifest",
+            "segments.jsonl",
+            "--model-path",
+            r"D:\AI-Models\Whisper\faster-whisper-large-v3",
+            "--local-files-only",
+        ]
+    )
+    assert args.model_path == Path(
+        r"D:\AI-Models\Whisper\faster-whisper-large-v3"
+    )
+    assert args.local_files_only is True
 
 
 def test_cuda_unavailable_fails_before_model_initialization(

@@ -20,6 +20,7 @@ It does not feed a TTS pipeline by architectural necessity. The independent futu
 
 ```text
 model:          Whisper large-v3
+model source:   explicit local CTranslate2 directory
 runtime:        faster-whisper / CTranslate2
 device:         cuda:0
 compute type:   float16
@@ -61,10 +62,11 @@ ASR segments remain operational result detail rather than being embedded in the 
     --manifest data/manifests/audio_segments.jsonl `
     --dataset-root . `
     --output-dir data `
-    --download-root models
+    --model-path D:\AI-Models\Whisper\faster-whisper-large-v3 `
+    --local-files-only
 ```
 
-Use `--local-files-only` after the model is cached and `--force` only when explicit re-transcription is intended.
+`--model-path` is the preferred stable, explicit model location and is mutually exclusive with the legacy `--download-root` cache option. Use `--local-files-only` to prohibit network access and `--force` only when explicit re-transcription is intended. No reusable source code hardcodes the machine-specific path.
 
 ## GPU integration smoke test
 
@@ -72,20 +74,18 @@ The test is opt-in so ordinary unit tests do not download a multi-gigabyte model
 
 ```powershell
 $env:J_SPEECH_OPS_JA_SMOKE_WAV = "path/to/real-japanese-segment.wav"
-$env:J_SPEECH_OPS_MODEL_CACHE = "path/to/model-cache"
-$env:J_SPEECH_OPS_LOCAL_MODELS_ONLY = "1"
+$env:J_SPEECH_OPS_WHISPER_MODEL_PATH = "D:\AI-Models\Whisper\faster-whisper-large-v3"
 .\.venv\Scripts\python.exe -m pytest -q -m gpu_integration
 ```
 
-The verified development smoke used the CC0 Wikimedia Commons file `Naruhodo-pcm.wav`, first passed through Stage 2. Test media and model cache remain under ignored `work/` and are not committed.
+The verified development smoke used the CC0 Wikimedia Commons file `Naruhodo-pcm.wav`, first passed through Stage 2. Test media remains under ignored `work/`; model weights live under the external `D:\AI-Models\Whisper` root and neither is committed.
 
 ## Limitations
 
 - large-v3 is the only implemented ASR backend.
 - CUDA/float16 and Japanese are intentionally fixed for this baseline.
 - There is no CPU execution mode or fallback.
-- Model downloads require network access unless the cache is already populated.
+- Model downloads require network access only when using the optional cache-based discovery path without an existing local snapshot; the verified explicit local path requires no network.
 - Existing-output reuse keys on sample ID plus audio path; content hashes are not yet part of the canonical audio contract.
 - Output replacement is deterministic but not transactional across manifest and report files.
 - No ASR accuracy conclusions are drawn from the smoke sample.
-

@@ -29,8 +29,17 @@ class ASRConfig(BaseModel):
     condition_on_previous_text: bool = False
     word_timestamps: bool = False
     temperature: float = Field(default=0.0, ge=0)
+    model_path: str | None = None
     download_root: str | None = None
     local_files_only: bool = False
+
+    @model_validator(mode="after")
+    def model_location_is_unambiguous(self) -> "ASRConfig":
+        if self.model_path is not None and not self.model_path.strip():
+            raise ValueError("model_path must not be blank")
+        if self.model_path is not None and self.download_root is not None:
+            raise ValueError("model_path and download_root are mutually exclusive")
+        return self
 
 
 class ASRSegment(BaseModel):
@@ -120,11 +129,16 @@ class FasterWhisperAdapter:
         self.config = config
         self.backend_version = version("faster-whisper")
         self.ctranslate2_version = version("ctranslate2")
+        self.model_source = config.model_path or config.model_name
+        if config.model_path is not None and not Path(config.model_path).is_dir():
+            raise ASRInfrastructureError(
+                f"configured local model directory is unavailable: {config.model_path}"
+            )
         self._dll_handles = _prepare_windows_cuda_runtime()
         self._validate_cuda()
         try:
             self._model = model_factory(
-                config.model_name,
+                self.model_source,
                 device=config.device,
                 device_index=config.device_index,
                 compute_type=config.compute_type,

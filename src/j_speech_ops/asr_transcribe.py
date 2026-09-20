@@ -22,7 +22,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--compute-type", choices=["float16"], default="float16")
     parser.add_argument("--language", choices=["ja"], default="ja")
     parser.add_argument("--beam-size", type=int, default=5)
-    parser.add_argument("--download-root", type=Path)
+    model_location = parser.add_mutually_exclusive_group()
+    model_location.add_argument("--model-path", type=Path)
+    model_location.add_argument("--download-root", type=Path)
     parser.add_argument("--local-files-only", action="store_true")
     parser.add_argument("--force", action="store_true")
     return parser
@@ -41,6 +43,7 @@ def main(argv: list[str] | None = None) -> int:
         compute_type=args.compute_type,
         language=args.language,
         beam_size=args.beam_size,
+        model_path=str(args.model_path.resolve()) if args.model_path else None,
         download_root=str(args.download_root) if args.download_root else None,
         local_files_only=args.local_files_only,
     )
