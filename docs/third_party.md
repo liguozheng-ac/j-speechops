@@ -1,6 +1,6 @@
 # Third-Party Components
 
-Versions below are the packages resolved in the verified Windows/Python 3.14.7 environment through Stage 7. Stages 4, 5, and 7 added no runtime dependency; Stage 6 adds the pinned text-frontend dependencies listed below.
+Versions below are the packages resolved in the verified Windows/Python 3.14.7 environments through Stage 8. Core and TTS dependencies remain isolated.
 
 | Component | Installed version | Purpose | Project | License | Classification |
 |---|---:|---|---|---|---|
@@ -20,6 +20,10 @@ Versions below are the packages resolved in the verified Windows/Python 3.14.7 e
 | Customized OpenJTalk/NAIST-jdic dictionary | bundled with pyopenjtalk-plus wheel | System dictionary used by the reading frontend | pyopenjtalk-plus `pyopenjtalk/dictionary/` | Combined notices include NAIST BSD, UniDic Consortium BSD-style, and Open JTalk Modified BSD terms | Borrow |
 | SudachiPy | 0.6.11, transitive | Required package dependency of pyopenjtalk-plus | https://github.com/WorksApplications/sudachi.rs/tree/develop/python | Apache-2.0 | Installed transitively; reading correction disabled |
 | SudachiDict-core | 20260723, transitive | Required dictionary dependency of pyopenjtalk-plus | https://github.com/WorksApplications/SudachiDict | Apache-2.0 | Installed transitively; not selected as project baseline |
+| Qwen3-TTS | 0.1.1 | Isolated CustomVoice inference API | https://github.com/QwenLM/Qwen3-TTS | Apache-2.0 | Borrow; `.venv-tts` only |
+| Qwen3-TTS 12Hz 1.7B CustomVoice | checkpoint | Stage 8 Japanese/Ono_Anna baseline | https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice | Apache-2.0 | Borrow; external model directory |
+| PyTorch CUDA | 2.11.0+cu128 | Qwen GPU tensor runtime | https://pytorch.org | BSD-3-Clause | Borrow; `.venv-tts` only |
+| TorchAudio CUDA | 2.11.0+cu128 | Qwen runtime dependency | https://github.com/pytorch/audio | BSD-2-Clause | Borrow; `.venv-tts` only |
 
 The Stage 2 adapter calls Silero's pip APIs with `onnx=False`, so actual VAD inference uses the PyTorch CPU backend. ONNX Runtime is declared because importing `silero_vad` 6.2.2 otherwise fails when its package initializer imports the sequence API; J-SpeechOps does not select the ONNX VAD backend.
 
@@ -42,6 +46,7 @@ pyopenjtalk-plus is a derivative of r9y9/pyopenjtalk that integrates improvement
 - Python standard-library `hashlib` and Unicode metadata for Stage 4 signals
 - Pydantic v2 and Python standard-library JSON/text/path utilities for the Stage 5 contract and ingestion
 - jaconv character normalization and the pyopenjtalk-plus OpenJTalk frontend
+- Qwen3-TTS 1.7B CustomVoice, PyTorch CUDA, and SoundFile for isolated synthesis
 
 ### Adapt
 
@@ -55,6 +60,7 @@ pyopenjtalk-plus is a derivative of r9y9/pyopenjtalk that integrates improvement
 - Japanese-aware Unicode script, density, rights, duration, repetition, and duplicate-routing baselines
 - Existing JSONL error-localization conventions adapted for text manifests
 - Versioned character normalization, explicit pronunciation overrides, business-domain regression cases, and strict text lifecycle integration
+- Fixed Japanese language/Ono_Anna voice, SDPA/BF16 runtime baseline, confirmed-override synthesis input, and stable seed/config provenance
 
 ### Build
 
@@ -79,3 +85,4 @@ pyopenjtalk-plus is a derivative of r9y9/pyopenjtalk that integrates improvement
 - Deterministic UTF-8 line ingestion, stable IDs, text-manifest IO, CLI, schema export, examples, and tests
 - `JapaneseNormalizer`, `ReadingProvider`, and `OpenJTalkReadingProvider`
 - Layered text-preparation batch pipeline, reports, override provenance/fingerprint, CLI, and 23-case regression fixture
+- Model-neutral TTS contracts, subprocess adapter, synthesis planner/text builder, `SynthesisRun`, success-only generated-audio manifest, WAV validation/hashing, Stage 8 CLI, and GPU integration test

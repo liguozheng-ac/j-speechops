@@ -293,3 +293,63 @@ The documented top-level boundaries are:
 **Decision:** Export a model-neutral `synthesis_ready_text_samples.jsonl` containing only PASS records while preserving PASS, REVIEW, and DROP in the complete curated manifest.
 
 **Rationale:** Future synthesis needs an unambiguous canonical input without losing review/drop evidence or coupling the dataset to a specific TTS model.
+
+## ADR 49 — TTS generation is separate from the text lifecycle
+
+**Decision:** Keep `TTSTextSample` at `CURATED + PASS`; never add synthesis status, model, speaker, seed, latency, or output audio to it.
+
+**Rationale:** Generation is a repeatable operation, not a new state of canonical source text. Keeping operational results separate preserves the established schema and lifecycle.
+
+## ADR 50 — One text may produce many synthesis runs
+
+**Decision:** Represent each backend/model/speaker/config/seed/text-strategy combination as an independent `SynthesisRun` linked by `sample_id`.
+
+**Rationale:** Different voices, settings, and future backends must coexist without replacing one another or rewriting the source text.
+
+## ADR 51 — Core and Qwen use a JSON subprocess boundary
+
+**Decision:** Core writes a model-neutral batch job, invokes `.venv-tts\\Scripts\\python.exe`, and validates a result document. Only `runtime/qwen3_tts_worker.py` imports `torch` and `qwen_tts` for synthesis.
+
+**Rationale:** Qwen's CUDA/Transformers dependency set must not mutate the established Core environment. A subprocess keeps the boundary explicit while avoiding an unnecessary HTTP service.
+
+## ADR 52 — Normalized text is the synthesis basis
+
+**Decision:** Begin with `normalized_text` and replace only surfaces confirmed by Stage 6 `applied_overrides` provenance. Retain full `reading_kana` as expected-reading evidence rather than sending it as the default sentence.
+
+**Rationale:** A generated frontend reading is not equivalent to an approved pronunciation rewrite. Local confirmed substitutions preserve Japanese orthography everywhere else.
+
+## ADR 53 — Override occurrence counts are integrity checks
+
+**Decision:** Require every confirmed override surface to occur exactly as many times as Stage 6 recorded; otherwise create a sample-level planning failure.
+
+**Rationale:** Guessing around stale or contradictory provenance could send unintended text to a model and conceal an upstream data-integrity defect.
+
+## ADR 54 — Stage 8 pins effective Qwen generation parameters
+
+**Decision:** Explicitly record and pass the locally inspected sampling, top-k/top-p, temperature, repetition-penalty, sub-talker, and maximum-token values. Use Japanese, Ono_Anna, BF16, CUDA device 0, SDPA, no instruction, and non-streaming mode.
+
+**Rationale:** The package merges checkpoint values and hard defaults. Saying only “default” would not preserve the configuration actually used.
+
+## ADR 55 — Seed and run identity provide reproducible provenance
+
+**Decision:** Derive a per-sample seed from a recorded base seed and SHA-256 of `sample_id`. Hash the sample, backend, model, speaker, config fingerprint, seed, synthesis strategy, and actual synthesis text into `run_id`.
+
+**Rationale:** Stable provenance enables idempotent retry and one-to-many runs. It does not promise byte-identical CUDA output across runtime or library upgrades.
+
+## ADR 56 — Successful audio requires physical validation
+
+**Decision:** Decode every generated WAV, require positive stream metadata, finite and non-silent samples, and record its SHA-256. Export only validated successes to `generated_audio_manifest.jsonl`.
+
+**Rationale:** A successful model call is insufficient evidence that a usable artifact was written. Later QA needs an explicit trusted handoff boundary.
+
+## ADR 57 — Model loads once and failures have two scopes
+
+**Decision:** Load Qwen once per worker batch. Record ordinary request failures and continue; fail the batch on worker initialization, CUDA loss, or an unusable runtime.
+
+**Rationale:** Reloading a 1.7B model per sample is wasteful, while continuing after infrastructure corruption would produce misleading partial evidence.
+
+## ADR 58 — Stage 8 generates but does not evaluate
+
+**Decision:** Record runtime measurements and artifact validity only. Do not compute ASR round trips, pronunciation scores, speaker similarity, MOS, pitch accent, or release decisions.
+
+**Rationale:** Those policies belong to the separate Quality & Release Pipeline and require evaluation evidence that synthesis cannot provide itself.

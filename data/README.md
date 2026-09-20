@@ -18,3 +18,7 @@ Stage 4 adds `data/manifests/curated_segments.jsonl`, the PASS-only `data/manife
 Stage 5 accepts UTF-8 source text under `data/raw/text/` and writes `data/manifests/tts_text_samples.jsonl`. This manifest contains `TTSTextSample` records and belongs to the independent TTS Production Pipeline; it contains no audio, speaker, ASR, or synthesis-run state.
 
 Stage 6 writes the intermediate `data/manifests/normalized_text_samples.jsonl`, final `data/manifests/reading_prepared_text_samples.jsonl`, and operational `data/reports/text_preparation_report.jsonl`. These generated files remain ignored. No audio is produced.
+
+Stage 7 writes `data/manifests/curated_tts_text_samples.jsonl`, PASS-only `data/manifests/synthesis_ready_text_samples.jsonl`, and `data/reports/tts_text_curation_report.jsonl`.
+
+Stage 8 consumes the PASS-only manifest plus Stage 6/7 reports without modifying them. Its ignored output directory contains `synthesis_runs.jsonl`, success-only `generated_audio_manifest.jsonl`, `tts_generation_summary.json`, and native-rate generated WAV files. Model weights remain outside the repository.

@@ -2,7 +2,7 @@
 
 **Japanese Speech Data & TTS Operations Pipeline**
 
-**Current Stage: Stage 7 — Japanese TTS Text Curation**
+**Current Stage: Stage 8 — Model-Neutral TTS Generation**
 
 J-SpeechOps is a shared engineering core for Japanese speech-data production, future TTS production, and quality/release operations. These are related pipelines with separate responsibilities—not one mandatory Speech → ASR → TTS chain.
 
@@ -17,15 +17,15 @@ Raw Speech -> Audio Validation -> Resample / Mono -> VAD / Segmentation
 
 Stages 1–4 are complete. Stage 4 consumes `transcribed_segments.jsonl`, records deterministic `pass`, `review`, or `drop` routing, and exports only PASS records to `usable_speech.jsonl`.
 
-### 2. TTS Production Pipeline — Stage 7 complete
+### 2. TTS Production Pipeline — Stage 8 complete
 
 ```text
 Raw Text -> Text Data Contract ✓ -> Japanese Normalization ✓
 -> Reading Preparation ✓ -> Text Curation ✓ -> Synthesis-ready Text
--> TTS Generation NEXT
+-> TTS Generation ✓ -> Generated Japanese Audio
 ```
 
-Stage 5 established the independent `TTSTextSample` contract. Stage 6 fills `normalized_text` and model-independent `reading_kana` through separate layers. Stage 7 routes prepared text to PASS, REVIEW, or DROP and exports only PASS records as model-neutral synthesis-ready text. ASR remains optional provenance, not a mandatory TTS upstream step.
+Stage 5 established the independent `TTSTextSample` contract. Stage 6 fills `normalized_text` and model-independent `reading_kana` through separate layers. Stage 7 routes prepared text to PASS, REVIEW, or DROP and exports only PASS records as model-neutral synthesis-ready text. Stage 8 creates separate, one-to-many `SynthesisRun` records and validated audio artifacts without mutating that text contract. ASR remains optional provenance, not a mandatory TTS upstream step.
 
 ### 3. Quality & Release Pipeline
 
@@ -34,7 +34,7 @@ Generated Audio -> Content QA -> Pronunciation QA -> Regression
 -> Human Review -> Release Gate
 ```
 
-This is future work. Stage 7 does not synthesize audio, evaluate generated speech, use an LLM or NER model, or add pitch accent.
+This is the next pipeline. Stage 8 generates audio but does not evaluate pronunciation, intelligibility, speaker similarity, MOS, pitch accent, or release fitness.
 
 ## Current implementation
 
@@ -45,6 +45,7 @@ This is future work. Stage 7 does not synthesize audio, evaluate generated speec
 - Stage 5: immutable `TTSTextSample`; independent text lifecycle; text provenance, rights, locale, intended-use, and domain; stable-ID UTF-8 ingestion; text JSONL and JSON Schema.
 - Stage 6/6.1: deterministic `jaconv` normalization with strict grouped-integer separator removal; model-neutral `ReadingProvider`; OpenJTalk Katakana baseline; traceable pronunciation overrides; layered manifests, operational reports, CLI, and regression fixture.
 - Stage 7: deterministic TTS-text risk inspection; rights, prepared-data, Unicode reading-script, emoji, control-character, and pronunciation-watchlist routing; PASS-only synthesis-ready export; operational provenance and CLI.
+- Stage 8: model-neutral synthesis contracts; normalized-text plus confirmed-override planning; automatic Core-to-TTS subprocess isolation; Qwen3-TTS 1.7B/Ono_Anna Japanese SDPA baseline; stable seed/run identity; idempotent generation; validated WAV hashes; success-only audio manifest and CLI.
 
 The ASR core depends only on J-SpeechOps contracts. Future adapters such as SenseVoice can implement the same boundary without changing the batch pipeline or `SpeechSample`.
 
@@ -168,6 +169,23 @@ The large-v3 GPU integration test is opt-in because it requires a cached model a
 
 Outputs are `curated_tts_text_samples.jsonl`, PASS-only `synthesis_ready_text_samples.jsonl`, and `tts_text_curation_report.jsonl`. PASS means no current policy rule fired; it is not human-verified pronunciation. REVIEW is an expected routing result, not a pipeline failure. Use `--force` to recurate existing CURATED records without changing prepared text fields.
 
+## Stage 8 CLI
+
+Run this command from the normal Core environment. It automatically invokes the project-local `.venv-tts` worker; manual environment switching is not required.
+
+```powershell
+.\.venv\Scripts\python.exe -m j_speech_ops.synthesize_tts `
+    --manifest data/manifests/synthesis_ready_text_samples.jsonl `
+    --prep-report data/reports/text_preparation_report.jsonl `
+    --curation-report data/reports/tts_text_curation_report.jsonl `
+    --model-path D:\AI-Models\Qwen3-TTS\Qwen3-TTS-12Hz-1.7B-CustomVoice `
+    --output-dir outputs/stage8_tts_generation
+```
+
+Only `CURATED + PASS` samples are accepted. The default text strategy sends `normalized_text` with only confirmed Stage 6 pronunciation overrides applied locally; full `reading_kana` is retained as expected-reading evidence. Existing successful runs with a matching WAV hash are skipped unless `--force` is supplied.
+
+Outputs are `synthesis_runs.jsonl`, success-only `generated_audio_manifest.jsonl`, `tts_generation_summary.json`, and native-rate WAV files under `audio/`. The current BF16/SDPA baseline is intended for production and batch validation but has not demonstrated real-time conversational latency.
+
 ## Documentation
 
 - `docs/stage3_asr.md` — Stage 3 scope, batch behavior, CLI, and verification
@@ -182,6 +200,7 @@ Outputs are `curated_tts_text_samples.jsonl`, PASS-only `synthesis_ready_text_sa
 - `docs/stage7_tts_text_curation.md` — Stage 7 architecture, outputs, CLI, and operations
 - `docs/tts_text_curation_policy.md` — deterministic PASS/REVIEW/DROP policy
 - `docs/pronunciation_risk_watchlist.md` — watchlist/override separation and feedback loop
+- `docs/stage8_tts_generation.md` — Stage 8 architecture, runtime isolation, contracts, CLI, and limitations
 - `docs/stage2_audio_preparation.md` — Stage 2 audio preparation
 - `docs/audio_preparation_policy.md` — audio and VAD policy
 - `docs/data_schema.md` — canonical `SpeechSample` contract
