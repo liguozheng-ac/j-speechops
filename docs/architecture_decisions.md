@@ -353,3 +353,39 @@ The documented top-level boundaries are:
 **Decision:** Record runtime measurements and artifact validity only. Do not compute ASR round trips, pronunciation scores, speaker similarity, MOS, pitch accent, or release decisions.
 
 **Rationale:** Those policies belong to the separate Quality & Release Pipeline and require evaluation evidence that synthesis cannot provide itself.
+
+## ADR 59 — Generated audio has an independent QA lifecycle
+
+**Decision:** Represent Stage 9 evidence and routing with `GeneratedAudioQAResult` and related operational contracts. Never convert generated TTS audio into `SpeechSample` or mutate Stage 8 manifests.
+
+**Rationale:** Generated artifacts are model outputs, not source speech-data records. A separate lifecycle preserves both provenance domains.
+
+## ADR 60 — Artifact failure and content disagreement have different consequences
+
+**Decision:** Reserve DROP for objective missing, corrupt, silent, non-finite, hash-invalid, or materially inconsistent audio. Route ASR or reading disagreement to REVIEW.
+
+**Rationale:** Artifact integrity is directly observable; Whisper content inference is fallible evidence and cannot independently justify destructive rejection.
+
+## ADR 61 — Japanese comparison occurs at canonical reading level
+
+**Decision:** Normalize Whisper text with the Stage 6 normalizer, obtain its reading through the existing OpenJTalk provider without source-text overrides, and compare conservative canonical readings.
+
+**Rationale:** Raw Kanji-to-Kana comparison is meaningless, while aggressively erasing long vowels, small Kana, moraic nasals, or voicing would conceal pronunciation differences.
+
+## ADR 62 — CER is evidence, not a quality score
+
+**Decision:** Record deterministic character edit distance and CER, but require exact canonical equality for PASS and define no CER threshold.
+
+**Rationale:** No representative Japanese calibration set currently supports a defensible threshold. A numeric score must not imply perceptual quality or correctness.
+
+## ADR 63 — Stage 9 PASS is not release
+
+**Decision:** Name the downstream file `qa_pass_audio_manifest.jsonl` and define PASS only as current artifact-integrity success plus exact round-trip reading agreement.
+
+**Rationale:** Naturalness, pitch accent, prosody, speaker fidelity, human judgment, and final release remain untested downstream concerns.
+
+## ADR 64 — One Whisper model instance serves a QA batch
+
+**Decision:** Initialize the existing Stage 3 adapter once per Stage 9 batch, fail fast on model/CUDA infrastructure errors, and continue only after recoverable per-sample failures.
+
+**Rationale:** Repeated large-v3 loads are wasteful, while silent CPU fallback or continued operation after CUDA failure would make performance and evidence unreliable.

@@ -2,7 +2,7 @@
 
 **Japanese Speech Data & TTS Operations Pipeline**
 
-**Current Stage: Stage 8 — Model-Neutral TTS Generation**
+**Current Stage: Stage 9 — Generated Audio Content QA & Routing**
 
 J-SpeechOps is a shared engineering core for Japanese speech-data production, future TTS production, and quality/release operations. These are related pipelines with separate responsibilities—not one mandatory Speech → ASR → TTS chain.
 
@@ -30,11 +30,17 @@ Stage 5 established the independent `TTSTextSample` contract. Stage 6 fills `nor
 ### 3. Quality & Release Pipeline
 
 ```text
-Generated Audio -> Content QA -> Pronunciation QA -> Regression
--> Human Review -> Release Gate
+Generated Audio
+-> Artifact Integrity             ✓ Stage 9
+-> ASR Round-trip Content QA      ✓ Stage 9
+-> PASS / REVIEW / DROP           ✓ Stage 9
+-> QA-pass Audio
+-> Pronunciation / Regression
+-> Human Review
+-> Release Gate                   NEXT
 ```
 
-This is the next pipeline. Stage 8 generates audio but does not evaluate pronunciation, intelligibility, speaker similarity, MOS, pitch accent, or release fitness.
+Stage 9 evaluates artifact integrity and machine content-consistency evidence. Whisper disagreement routes to REVIEW rather than DROP. PASS is not a claim about naturalness, pronunciation quality, pitch accent, speaker similarity, human acceptance, or release fitness.
 
 ## Current implementation
 
@@ -46,6 +52,7 @@ This is the next pipeline. Stage 8 generates audio but does not evaluate pronunc
 - Stage 6/6.1: deterministic `jaconv` normalization with strict grouped-integer separator removal; model-neutral `ReadingProvider`; OpenJTalk Katakana baseline; traceable pronunciation overrides; layered manifests, operational reports, CLI, and regression fixture.
 - Stage 7: deterministic TTS-text risk inspection; rights, prepared-data, Unicode reading-script, emoji, control-character, and pronunciation-watchlist routing; PASS-only synthesis-ready export; operational provenance and CLI.
 - Stage 8: model-neutral synthesis contracts; normalized-text plus confirmed-override planning; automatic Core-to-TTS subprocess isolation; Qwen3-TTS 1.7B/Ono_Anna Japanese SDPA baseline; stable seed/run identity; idempotent generation; validated WAV hashes; success-only audio manifest and CLI.
+- Stage 9: independent generated-audio QA contracts; objective integrity routing; one-load Whisper round trip; Stage 6 normalization/OpenJTalk reuse; conservative reading canonicalization; exact-match PASS; mismatch REVIEW; PASS-only and review manifests; idempotent CLI.
 
 The ASR core depends only on J-SpeechOps contracts. Future adapters such as SenseVoice can implement the same boundary without changing the batch pipeline or `SpeechSample`.
 
@@ -154,10 +161,10 @@ data/reports/text_preparation_report.jsonl
 ## Tests
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest -q -m "not gpu_integration"
+.\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The large-v3 GPU integration test is opt-in because it requires a cached model and a real Japanese WAV. See `docs/stage3_asr.md` for the environment variables and verified smoke procedure.
+The Stage 3, Stage 8, and Stage 9 GPU integration tests are opt-in and default-skipped. See their stage documentation for environment variables and verified smoke procedures.
 
 ## Stage 7 CLI
 
@@ -188,6 +195,19 @@ Only `CURATED + PASS` samples are accepted. The default text strategy sends `nor
 
 Outputs are `synthesis_runs.jsonl`, success-only `generated_audio_manifest.jsonl`, `tts_generation_summary.json`, and native-rate WAV files under `audio/`. The current BF16/SDPA baseline is intended for production and batch validation but has not demonstrated real-time conversational latency.
 
+## Stage 9 CLI
+
+Run Stage 9 from the Core environment. It reuses existing Stage 8 audio and does not invoke Qwen or `.venv-tts`.
+
+```powershell
+.\.venv\Scripts\python.exe -m j_speech_ops.qa_generated_audio `
+    --manifest outputs\stage8_tts_generation\integration_smoke\generated_audio_manifest.jsonl `
+    --model-path D:\AI-Models\Whisper\faster-whisper-large-v3 `
+    --output-dir outputs\stage9_generated_audio_qa\integration_smoke
+```
+
+Outputs are the complete `generated_audio_qa_results.jsonl`, PASS-only `qa_pass_audio_manifest.jsonl`, REVIEW-only `qa_review_queue.jsonl`, and `qa_summary.json`. A Stage 9 PASS means only that current integrity checks succeeded and canonical expected/observed round-trip readings matched exactly. It is not released audio.
+
 ## Documentation
 
 - `docs/stage3_asr.md` — Stage 3 scope, batch behavior, CLI, and verification
@@ -203,6 +223,8 @@ Outputs are `synthesis_runs.jsonl`, success-only `generated_audio_manifest.jsonl
 - `docs/tts_text_curation_policy.md` — deterministic PASS/REVIEW/DROP policy
 - `docs/pronunciation_risk_watchlist.md` — watchlist/override separation and feedback loop
 - `docs/stage8_tts_generation.md` — Stage 8 architecture, runtime isolation, contracts, CLI, and limitations
+- `docs/stage9_generated_audio_content_qa.md` — Stage 9 architecture, contracts, CLI, outputs, and limitations
+- `docs/generated_audio_qa_policy.md` — integrity, reading comparison, and PASS/REVIEW/DROP policy
 - `docs/stage2_audio_preparation.md` — Stage 2 audio preparation
 - `docs/audio_preparation_policy.md` — audio and VAD policy
 - `docs/data_schema.md` — canonical `SpeechSample` contract

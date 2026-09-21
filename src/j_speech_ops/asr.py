@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import sys
+import time
 from collections.abc import Callable
 from importlib.metadata import version
 from pathlib import Path
@@ -214,3 +215,38 @@ class FasterWhisperAdapter:
             avg_logprob=getattr(segment, "avg_logprob", None),
             no_speech_probability=getattr(segment, "no_speech_prob", None),
         )
+
+
+class LazyFasterWhisperAdapter:
+    """Expose ASR identity immediately and load large-v3 on first transcription."""
+
+    def __init__(
+        self,
+        config: ASRConfig,
+        *,
+        adapter_factory: Callable[[ASRConfig], ASRAdapter] = FasterWhisperAdapter,
+    ) -> None:
+        self.config = config
+        self._adapter_factory = adapter_factory
+        self._adapter: ASRAdapter | None = None
+        self.model_load_time_sec = 0.0
+        self._runtime_info = ASRRuntimeInfo(
+            backend_name=FasterWhisperAdapter.backend_name,
+            backend_version=version("faster-whisper"),
+            model_name=config.model_name,
+            device=config.device,
+            compute_type=config.compute_type,
+            language=config.language,
+            effective_config=config.model_dump(mode="json"),
+        )
+
+    @property
+    def runtime_info(self) -> ASRRuntimeInfo:
+        return self._adapter.runtime_info if self._adapter else self._runtime_info
+
+    def transcribe(self, audio_path: Path) -> ASRResult:
+        if self._adapter is None:
+            started = time.perf_counter()
+            self._adapter = self._adapter_factory(self.config)
+            self.model_load_time_sec = time.perf_counter() - started
+        return self._adapter.transcribe(audio_path)
