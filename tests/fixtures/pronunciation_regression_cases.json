@@ -1,0 +1,48 @@
+{
+  "version": "stage10a-test-fixture-v1",
+  "purpose": "Small regression examples copied from project smoke provenance; none are represented as human listening judgments.",
+  "cases": [
+    {
+      "logical_case_id": "numeric-3500-yen",
+      "surface": "3500円",
+      "expected_reading": "サンゼンゴヒャクエン",
+      "expectation_source": "reading_provider",
+      "confirmation_status": "derived"
+    },
+    {
+      "logical_case_id": "date-september-21",
+      "surface": "9月21日",
+      "expected_reading": "クガツニジューイチニチ",
+      "expectation_source": "reading_provider",
+      "confirmation_status": "derived"
+    },
+    {
+      "logical_case_id": "time-15-30",
+      "surface": "15時30分",
+      "expected_reading": "ジューゴジサンジュップン",
+      "expectation_source": "reading_provider",
+      "confirmation_status": "derived"
+    },
+    {
+      "logical_case_id": "override-jr",
+      "surface": "JR",
+      "expected_reading": "ジェイアール",
+      "expectation_source": "confirmed_override",
+      "confirmation_status": "config_confirmed"
+    },
+    {
+      "logical_case_id": "override-wifi",
+      "surface": "Wi-Fi",
+      "expected_reading": "ワイファイ",
+      "expectation_source": "confirmed_override",
+      "confirmation_status": "config_confirmed"
+    },
+    {
+      "logical_case_id": "override-chatgpt",
+      "surface": "ChatGPT",
+      "expected_reading": "チャットジーピーティー",
+      "expectation_source": "confirmed_override",
+      "confirmation_status": "config_confirmed"
+    }
+  ]
+}

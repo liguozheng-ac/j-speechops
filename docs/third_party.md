@@ -1,6 +1,6 @@
 # Third-Party Components
 
-Versions below are the packages resolved in the verified Windows/Python 3.14.7 environments through Stage 9. Core and TTS dependencies remain isolated.
+Versions below are the packages resolved in the verified Windows/Python 3.14.7 environments through Stage 10A. Core and TTS dependencies remain isolated.
 
 | Component | Installed version | Purpose | Project | License | Classification |
 |---|---:|---|---|---|---|
@@ -87,3 +87,4 @@ pyopenjtalk-plus is a derivative of r9y9/pyopenjtalk that integrates improvement
 - Layered text-preparation batch pipeline, reports, override provenance/fingerprint, CLI, and 23-case regression fixture
 - Model-neutral TTS contracts, subprocess adapter, synthesis planner/text builder, `SynthesisRun`, success-only generated-audio manifest, WAV validation/hashing, Stage 8 CLI, and GPU integration test
 - Generated-audio QA contracts, integrity routing, Japanese reading canonicalizer, Levenshtein/CER evidence, QA orchestration/manifests, idempotency, Stage 9 CLI, and GPU integration test
+- Pronunciation expectation/risk evidence, regression baselines/comparison, conservative review routing, Stage 10A CLI, fixtures, and tests

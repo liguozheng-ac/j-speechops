@@ -389,3 +389,27 @@ The documented top-level boundaries are:
 **Decision:** Initialize the existing Stage 3 adapter once per Stage 9 batch, fail fast on model/CUDA infrastructure errors, and continue only after recoverable per-sample failures.
 
 **Rationale:** Repeated large-v3 loads are wasteful, while silent CPU fallback or continued operation after CUDA failure would make performance and evidence unreliable.
+
+## ADR 65 — Pronunciation evidence preserves source authority
+
+**Decision:** Label rule-derived, reading-provider, configured-override, and explicitly human-confirmed expectations separately. Never upgrade OpenJTalk or fixture evidence to human-confirmed truth.
+
+**Rationale:** Expected readings have different authority. Collapsing their provenance would make downstream human review misleading and regression baselines unauditable.
+
+## ADR 66 — Span support is conservative evidence, not phonetic alignment
+
+**Decision:** Report only whether a confirmed canonical sequence appears in the full observed Stage 9 reading. Route absent or unresolvable sequences to REVIEW and make no correctness claim.
+
+**Rationale:** The current data has no trustworthy time-aligned phoneme reference. Invented span alignment would be less reliable than an explicit unresolved result.
+
+## ADR 67 — Regression compares linguistic evidence, not WAV bytes
+
+**Decision:** Treat expected-reading, observed-reading, source-text, and risk-status changes as material review evidence. Record model/speaker/config and artifact-hash changes as provenance unless linguistic evidence also changed.
+
+**Rationale:** TTS can produce different valid waveforms across runs. Byte identity is useful for provenance but is not a pronunciation criterion.
+
+## ADR 68 — Stage 10A stops before human decision and release
+
+**Decision:** Produce review-compatible evidence and regression routing only. Do not add APPROVE/REWORK/REJECT or release lifecycle states.
+
+**Rationale:** Human judgment and release authority belong to the future Stage 10B boundary.

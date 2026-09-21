@@ -2,7 +2,7 @@
 
 **Japanese Speech Data & TTS Operations Pipeline**
 
-**Current Stage: Stage 9 — Generated Audio Content QA & Routing**
+**Current Stage: Stage 10A — Japanese Pronunciation Evidence & Regression**
 
 J-SpeechOps is a shared engineering core for Japanese speech-data production, future TTS production, and quality/release operations. These are related pipelines with separate responsibilities—not one mandatory Speech → ASR → TTS chain.
 
@@ -35,12 +35,15 @@ Generated Audio
 -> ASR Round-trip Content QA      ✓ Stage 9
 -> PASS / REVIEW / DROP           ✓ Stage 9
 -> QA-pass Audio
--> Pronunciation / Regression
--> Human Review
--> Release Gate                   NEXT
+-> Pronunciation Evidence         ✓ Stage 10A
+-> Regression                     ✓ Stage 10A
+-> Human Review                   FUTURE Stage 10B
+-> Release Gate                   FUTURE
 ```
 
 Stage 9 evaluates artifact integrity and machine content-consistency evidence. Whisper disagreement routes to REVIEW rather than DROP. PASS is not a claim about naturalness, pronunciation quality, pitch accent, speaker similarity, human acceptance, or release fitness.
+
+Stage 10A connects Stage 7 risk/override provenance, Stage 8 synthesis identity, and Stage 9 observed reading evidence. It records conservative span support and logical-case regression changes without treating WAV hashes, ASR, OpenJTalk, or absent risks as pronunciation truth. It does not perform human approval or release.
 
 ## Current implementation
 
@@ -53,6 +56,7 @@ Stage 9 evaluates artifact integrity and machine content-consistency evidence. W
 - Stage 7: deterministic TTS-text risk inspection; rights, prepared-data, Unicode reading-script, emoji, control-character, and pronunciation-watchlist routing; PASS-only synthesis-ready export; operational provenance and CLI.
 - Stage 8: model-neutral synthesis contracts; normalized-text plus confirmed-override planning; automatic Core-to-TTS subprocess isolation; Qwen3-TTS 1.7B/Ono_Anna Japanese SDPA baseline; stable seed/run identity; idempotent generation; validated WAV hashes; success-only audio manifest and CLI.
 - Stage 9: independent generated-audio QA contracts; objective integrity routing; one-load Whisper round trip; Stage 6 normalization/OpenJTalk reuse; conservative reading canonicalization; exact-match PASS; mismatch REVIEW; PASS-only and review manifests; idempotent CLI.
+- Stage 10A: model-neutral pronunciation evidence; explicit expectation authority; risk-span support/unresolved routing; persistent logical-case baselines; linguistic-evidence regression; provenance-only model/speaker/config/hash change recording; Stage 10B-compatible review artifacts.
 
 The ASR core depends only on J-SpeechOps contracts. Future adapters such as SenseVoice can implement the same boundary without changing the batch pipeline or `SpeechSample`.
 
@@ -208,6 +212,18 @@ Run Stage 9 from the Core environment. It reuses existing Stage 8 audio and does
 
 Outputs are the complete `generated_audio_qa_results.jsonl`, PASS-only `qa_pass_audio_manifest.jsonl`, REVIEW-only `qa_review_queue.jsonl`, and `qa_summary.json`. A Stage 9 PASS means only that current integrity checks succeeded and canonical expected/observed round-trip readings matched exactly. It is not released audio.
 
+## Stage 10A CLI
+
+Stage 10A runs in Core without loading TTS or adding a GPU model. It consumes Stage 7 provenance, Stage 8 artifact/run manifests, and the Stage 9 PASS boundary. The three operations are:
+
+```powershell
+.\.venv\Scripts\python.exe -m j_speech_ops.pronunciation_regression_cli build --help
+.\.venv\Scripts\python.exe -m j_speech_ops.pronunciation_regression_cli capture-baseline --help
+.\.venv\Scripts\python.exe -m j_speech_ops.pronunciation_regression_cli compare --help
+```
+
+See `docs/stage10a_pronunciation_regression.md` for complete commands and evidence semantics. A no-regression result means only that the captured linguistic evidence did not materially change; it is not human approval.
+
 ## Documentation
 
 - `docs/stage3_asr.md` — Stage 3 scope, batch behavior, CLI, and verification
@@ -225,6 +241,7 @@ Outputs are the complete `generated_audio_qa_results.jsonl`, PASS-only `qa_pass_
 - `docs/stage8_tts_generation.md` — Stage 8 architecture, runtime isolation, contracts, CLI, and limitations
 - `docs/stage9_generated_audio_content_qa.md` — Stage 9 architecture, contracts, CLI, outputs, and limitations
 - `docs/generated_audio_qa_policy.md` — integrity, reading comparison, and PASS/REVIEW/DROP policy
+- `docs/stage10a_pronunciation_regression.md` — pronunciation evidence, regression contracts, CLI, and limitations
 - `docs/stage2_audio_preparation.md` — Stage 2 audio preparation
 - `docs/audio_preparation_policy.md` — audio and VAD policy
 - `docs/data_schema.md` — canonical `SpeechSample` contract
