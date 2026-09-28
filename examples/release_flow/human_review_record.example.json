@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "review_id": "1111111111111111111111111111111111111111111111111111111111111111",
+  "queue_item_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "logical_case_id": "sample_001",
+  "sample_id": "sample_001",
+  "reviewer_id": "reviewer_demo",
+  "reviewed_at": "2026-01-01T12:00:00Z",
+  "decision": "approve",
+  "reason_codes": [],
+  "resolved_issue_ids": [],
+  "notes": "Fictional illustration; no listening took place.",
+  "artifact_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "artifact_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "stage9_qa_id": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "stage10a_evidence_id": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "regression_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "review_context_fingerprint_sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+  "review_policy_version": "mandatory-human-final-review-v1",
+  "review_policy_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+}

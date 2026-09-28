@@ -99,7 +99,8 @@ Validation requires a present, nonempty, decodable WAV with positive sample rate
     --manifest data/manifests/synthesis_ready_text_samples.jsonl `
     --prep-report data/reports/text_preparation_report.jsonl `
     --curation-report data/reports/tts_text_curation_report.jsonl `
-    --model-path D:\AI-Models\Qwen3-TTS\Qwen3-TTS-12Hz-1.7B-CustomVoice `
+    --model-path <external-qwen-model-dir> `
+    --post-roll-ms 300 `
     --output-dir outputs/stage8_tts_generation `
     --base-seed 20260921
 ```
@@ -118,6 +119,6 @@ Normal unit tests fake the runtime boundary and require no GPU, model, network, 
 
 ```powershell
 $env:J_SPEECH_OPS_RUN_STAGE8_GPU = "1"
-$env:J_SPEECH_OPS_QWEN_MODEL_PATH = "D:\AI-Models\Qwen3-TTS\Qwen3-TTS-12Hz-1.7B-CustomVoice"
+$env:J_SPEECH_OPS_QWEN_MODEL_PATH = "<external-qwen-model-dir>"
 .\.venv\Scripts\python.exe -m pytest -q tests/test_tts_gpu_integration.py
 ```

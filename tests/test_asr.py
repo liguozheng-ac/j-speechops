@@ -116,12 +116,12 @@ def test_asr_cli_exposes_explicit_model_path() -> None:
             "--manifest",
             "segments.jsonl",
             "--model-path",
-            r"D:\AI-Models\Whisper\faster-whisper-large-v3",
+            r"X:\external-models\Whisper\faster-whisper-large-v3",
             "--local-files-only",
         ]
     )
     assert args.model_path == Path(
-        r"D:\AI-Models\Whisper\faster-whisper-large-v3"
+        r"X:\external-models\Whisper\faster-whisper-large-v3"
     )
     assert args.local_files_only is True
 

@@ -62,7 +62,7 @@ ASR segments remain operational result detail rather than being embedded in the 
     --manifest data/manifests/audio_segments.jsonl `
     --dataset-root . `
     --output-dir data `
-    --model-path D:\AI-Models\Whisper\faster-whisper-large-v3 `
+    --model-path <external-whisper-model-dir> `
     --local-files-only
 ```
 
@@ -74,11 +74,11 @@ The test is opt-in so ordinary unit tests do not download a multi-gigabyte model
 
 ```powershell
 $env:J_SPEECH_OPS_JA_SMOKE_WAV = "path/to/real-japanese-segment.wav"
-$env:J_SPEECH_OPS_WHISPER_MODEL_PATH = "D:\AI-Models\Whisper\faster-whisper-large-v3"
+$env:J_SPEECH_OPS_WHISPER_MODEL_PATH = "<external-whisper-model-dir>"
 .\.venv\Scripts\python.exe -m pytest -q -m gpu_integration
 ```
 
-The verified development smoke used the CC0 Wikimedia Commons file `Naruhodo-pcm.wav`, first passed through Stage 2. Test media remains under ignored `work/`; model weights live under the external `D:\AI-Models\Whisper` root and neither is committed.
+The verified development smoke used the CC0 Wikimedia Commons file `Naruhodo-pcm.wav`, first passed through Stage 2. Test media remains under ignored `work/`; model weights live in an external model directory and neither is committed.
 
 ## Limitations
 

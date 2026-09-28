@@ -541,10 +541,10 @@ def test_cli_requires_explicit_model_and_has_no_tts_runtime_argument() -> None:
             "--manifest",
             "generated_audio_manifest.jsonl",
             "--model-path",
-            "D:/AI-Models/Whisper/faster-whisper-large-v3",
+            "X:/external-models/Whisper/faster-whisper-large-v3",
             "--force",
         ]
     )
-    assert args.model_path == Path("D:/AI-Models/Whisper/faster-whisper-large-v3")
+    assert args.model_path == Path("X:/external-models/Whisper/faster-whisper-large-v3")
     assert args.force is True
     assert "tts" not in vars(args)

@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "gate_id": "2222222222222222222222222222222222222222222222222222222222222222",
+  "queue_item_id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "logical_case_id": "sample_001",
+  "sample_id": "sample_001",
+  "artifact_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "artifact_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "review_id": "1111111111111111111111111111111111111111111111111111111111111111",
+  "review_freshness": "current",
+  "human_decision": "approve",
+  "decision": "released",
+  "reason_codes": [],
+  "hard_blocker_codes": [],
+  "resolved_issue_ids": [],
+  "unresolved_issue_ids": [],
+  "stage9_qa_id": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "stage10a_evidence_id": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "regression_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "release_policy_version": "human-approved-release-gate-v1",
+  "release_policy_fingerprint_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "sample_id": "sample_001",
+  "input_text": "おはようございます。",
+  "expected_reading_kana": "オハヨーゴザイマス。",
+  "synthesis_text": "おはようございます。",
+  "synthesis_text_strategy": "normalized-with-confirmed-overrides-v1",
+  "applied_pronunciation_overrides": [],
+  "audio_path": "example.wav",
+  "backend": "qwen3-tts",
+  "backend_version": "example-only",
+  "model_name": "Qwen3-TTS-12Hz-1.7B-CustomVoice",
+  "speaker": "Ono_Anna",
+  "language": "Japanese",
+  "audio_post_processing": {
+    "type": "tail_padding",
+    "duration_ms": 300,
+    "policy_version": "tail-padding-v1",
+    "policy_fingerprint_sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+  },
+  "sample_rate_hz": 24000,
+  "channels": 1,
+  "duration_sec": 1.2,
+  "audio_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+}

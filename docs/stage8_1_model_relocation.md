@@ -1,19 +1,14 @@
-# Stage 8.1 Whisper model relocation
+# External model storage and offline discovery
 
-## Stable model storage
+## Model storage boundary
 
-The verified Whisper large-v3 CTranslate2 model is stored outside the Git repository:
+Whisper large-v3 and Qwen3-TTS checkpoints are stored in operator-selected directories outside the Git repository. Model weights are runtime resources, not project source, and must not be committed or copied under the project root.
 
-```text
-D:\AI-Models\Whisper\faster-whisper-large-v3
-```
-
-The directory contains the copied model snapshot files directly. Model weights are not project source and must not be placed under `D:\AI-Projects\J-SpeechOps` or committed to Git.
-
-The Qwen3-TTS model remains unchanged at:
+Use these logical locations when following the examples:
 
 ```text
-D:\AI-Models\Qwen3-TTS\Qwen3-TTS-12Hz-1.7B-CustomVoice
+<external-whisper-model-dir>
+<external-qwen-model-dir>
 ```
 
 ## Offline ASR selection
@@ -25,14 +20,23 @@ Production and smoke invocations select the Whisper directory explicitly and pro
     --manifest data\manifests\audio_segments.jsonl `
     --dataset-root . `
     --output-dir data `
-    --model-path D:\AI-Models\Whisper\faster-whisper-large-v3 `
+    --model-path <external-whisper-model-dir> `
     --local-files-only
 ```
 
-The opt-in GPU integration test uses `J_SPEECH_OPS_WHISPER_MODEL_PATH` to supply the same explicit directory. The reusable ASR source has no machine-specific default. `--model-path` and the legacy cache-oriented `--download-root` option are mutually exclusive.
+The opt-in GPU integration test uses `J_SPEECH_OPS_WHISPER_MODEL_PATH` to supply the same explicit directory. Reusable ASR source has no machine-specific default. `--model-path` and the legacy cache-oriented `--download-root` option are mutually exclusive.
+
+## TTS selection
+
+Qwen3-TTS follows the same external-storage rule. Configure `<external-qwen-model-dir>` through the Stage 8 runtime interface. Moving the repository must not change, duplicate, or download the checkpoint.
 
 ## Execution boundary
 
-The canonical project root is `D:\AI-Projects\J-SpeechOps`. Its Stage 3 runtime now depends only on the canonical source tree, its rebuilt environment, the stable external model directory, and the selected input data. The retained former workspace is a backup only and is not required for J-SpeechOps execution.
+An offline execution depends only on:
 
-The relocation was copy-first. The source cache and former workspace were not deleted.
+- the checked-out source tree;
+- an environment rebuilt from project metadata;
+- explicitly selected external model directories;
+- the selected input data.
+
+No runtime component may rely on a former checkout, cache location, or user-specific filesystem path.

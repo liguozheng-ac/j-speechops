@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "regression_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "logical_case_id": "sample_001",
+  "baseline_id": null,
+  "current_evidence_id": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "decision": "no_regression_detected",
+  "changes": [],
+  "policy_version": "pronunciation-evidence-regression-v1",
+  "policy_fingerprint_sha256": "8888888888888888888888888888888888888888888888888888888888888888"
+}

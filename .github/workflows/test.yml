@@ -1,0 +1,33 @@
+name: Core tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+      - name: Install Core and development dependencies
+        run: python -m pip install -e ".[dev]"
+      - name: Check dependencies
+        run: python -m pip check
+      - name: Run Core tests
+        run: python -m pytest -q
+      - name: Check committed diff whitespace
+        run: git diff --check HEAD^ HEAD
+      - name: Check working tree whitespace
+        run: git diff --check

@@ -22,12 +22,10 @@ from j_speech_ops.tts_synthesis import (
 def test_qwen3_tts_stage8_worker_generates_japanese_wav(tmp_path: Path) -> None:
     project_root = Path(__file__).resolve().parents[1]
     tts_python = project_root / ".venv-tts" / "Scripts" / "python.exe"
-    model_path = Path(
-        os.environ.get(
-            "J_SPEECH_OPS_QWEN_MODEL_PATH",
-            r"D:\AI-Models\Qwen3-TTS\Qwen3-TTS-12Hz-1.7B-CustomVoice",
-        )
-    )
+    configured_model_path = os.environ.get("J_SPEECH_OPS_QWEN_MODEL_PATH")
+    if not configured_model_path:
+        pytest.skip("set J_SPEECH_OPS_QWEN_MODEL_PATH to the external Qwen model")
+    model_path = Path(configured_model_path)
     output = tmp_path / "stage8_gpu.wav"
     adapter = Qwen3TTSRuntimeAdapter(
         python_executable=tts_python,

@@ -45,7 +45,7 @@ Whisper initialization is lazy: a batch with work loads the model once, while a 
 ```powershell
 .\.venv\Scripts\python.exe -m j_speech_ops.qa_generated_audio `
     --manifest outputs\stage8_tts_generation\integration_smoke\generated_audio_manifest.jsonl `
-    --model-path D:\AI-Models\Whisper\faster-whisper-large-v3 `
+    --model-path <external-whisper-model-dir> `
     --output-dir outputs\stage9_generated_audio_qa\integration_smoke
 ```
 
@@ -57,7 +57,7 @@ Normal tests are CPU/offline/model-free and use fake ASR evidence. The real GPU 
 
 ```powershell
 $env:J_SPEECH_OPS_RUN_STAGE9_GPU = "1"
-$env:J_SPEECH_OPS_WHISPER_MODEL_PATH = "D:\AI-Models\Whisper\faster-whisper-large-v3"
+$env:J_SPEECH_OPS_WHISPER_MODEL_PATH = "<external-whisper-model-dir>"
 $env:J_SPEECH_OPS_STAGE8_AUDIO_MANIFEST = "path\to\generated_audio_manifest.jsonl"
 .\.venv\Scripts\python.exe -m pytest -q tests\test_generated_audio_qa_gpu_integration.py
 ```

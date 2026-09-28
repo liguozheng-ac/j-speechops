@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "sample_id": "sample_001",
+  "dataset_id": "public-example",
+  "language": "ja",
+  "locale": "ja-JP",
+  "text": {
+    "raw_text": "おはようございます。",
+    "normalized_text": "おはようございます。",
+    "reading_kana": "オハヨーゴザイマス。",
+    "phonemes": null
+  },
+  "source": {"source_type": "manual", "source_name": "synthetic-example"},
+  "rights_status": "cleared",
+  "intended_use": "demo",
+  "state": {"stage": "curated", "curation_decision": "pass", "decision_reasons": []}
+}

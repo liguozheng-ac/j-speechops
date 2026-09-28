@@ -16,7 +16,7 @@
 | Word timestamps | `false` |
 | faster-whisper VAD | `false` |
 
-The verified stable local model root is `D:\AI-Models\Whisper\faster-whisper-large-v3`. This location is documentation and deployment configuration, not a hardcoded source default. `--local-files-only` is required for offline validation.
+The verified setup keeps the Whisper model in an operator-selected directory outside the repository. This location is deployment configuration, not a hardcoded source default. `--local-files-only` is required for offline validation.
 
 Language detection metadata may be recorded by the backend, but decoding is explicitly constrained to Japanese. Stage 2 already supplies speech-only segments, so enabling faster-whisper VAD would duplicate responsibility and could change established lineage boundaries.
 

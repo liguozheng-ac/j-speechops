@@ -1,39 +1,28 @@
-# Stage 7.5 — Project Relocation Handoff
+# Local repository placement
 
-## Canonical local project root
+## Project root
 
-```text
-D:\AI-Projects\J-SpeechOps
-```
+Run development and verification from the checked-out project root. A Python virtual environment is local state: create it from `pyproject.toml` after cloning or copying the repository instead of transferring an existing Windows environment between directories.
 
-All Stage 8 and later development must use this directory. The former Codex workspace remains available only as a retained backup. Stage 8.1 copied the retained Whisper snapshot to the stable external model root documented in `stage8_1_model_relocation.md`, so the old workspace is no longer an execution dependency.
+## Repository boundary
 
-The old workspace was not deleted.
+The repository contains source, tests, documentation, configuration, examples, schemas, and small deterministic fixtures. Runtime outputs, work files, model weights, large audio files, caches, and virtual environments remain outside version control under the rules in `.gitignore`.
 
-## Relocation boundary
+Whisper and TTS checkpoints are external runtime dependencies. Supply their locations through the documented command-line or environment settings; reusable source code must not depend on a machine-specific absolute path.
 
-The project was copied rather than moved. Source, tests, documentation, configuration, examples, schemas, data documentation, generated smoke outputs, small work fixtures, and `.git` metadata were copied. The old Windows `.venv` was excluded and rebuilt from `pyproject.toml` with Python 3.14.7.
+## Relocation checklist
 
-At the time of Stage 7.5, the 2.88 GiB Hugging Face-format `Systran/faster-whisper-large-v3` cache was intentionally not duplicated and GPU validation temporarily reused the retained cache. Stage 8.1 supersedes that temporary arrangement with:
+When relocating a checkout:
 
-```text
-D:\AI-Models\Whisper\faster-whisper-large-v3
-```
+1. Copy the repository, including `.git`, before retiring the source checkout.
+2. Rebuild the environment from `pyproject.toml`.
+3. Keep model storage external and configure its path explicitly.
+4. Run `pip check`, the full test suite, and the opt-in hardware smoke tests that apply to the machine.
+5. Confirm ignored local resources remain untracked.
 
-No model was downloaded or deleted.
+No model download or deletion is required merely because the repository location changes.
 
-## Verification baseline
+## Stable contracts
 
-- Editable package: `j-speech-ops 0.7.0`
-- Python: `3.14.7`
-- Full tests: `138 passed, 1 skipped`
-- Opt-in large-v3 CUDA integration: `1 passed`
-- GPU: NVIDIA GeForce RTX 5080 Laptop GPU
-- Stage 6 frontend amount smoke: verified
-- Stage 7 routing smoke: PASS=1, REVIEW=2, DROP=1, failed=0
 - SpeechSample schema SHA-256: `DEC2C98402E4433DF64E0B0F2280A73C7EE8CF3EE03232D7BCC8EC2EF7B70435`
 - TTSTextSample schema SHA-256: `169E87DFA910A64BEF2E1200EB94927C96857065C76629D7FB07CB107DE74EDE`
-
-## Git condition carried forward
-
-The copied `.git` directory resolves to the canonical root. The repository is on `master`, has no commits, has no configured remote, and all project source files remain untracked. No repository was initialized, no commit was created, and nothing was pushed during relocation.

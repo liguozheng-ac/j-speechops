@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "release_id": "3333333333333333333333333333333333333333333333333333333333333333",
+  "logical_case_id": "sample_001",
+  "sample_id": "sample_001",
+  "artifact_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "synthesis_run_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "artifact_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "audio_path": "example.wav",
+  "source_text": "おはようございます。",
+  "audio_post_processing": {
+    "type": "tail_padding",
+    "duration_ms": 300,
+    "policy_version": "tail-padding-v1",
+    "policy_fingerprint_sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+  },
+  "stage9_qa_id": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "stage10a_evidence_id": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "regression_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "human_review_id": "1111111111111111111111111111111111111111111111111111111111111111",
+  "release_gate_id": "2222222222222222222222222222222222222222222222222222222222222222",
+  "reviewer_id": "reviewer_demo",
+  "released_at": "2026-01-01T13:00:00Z",
+  "tts_backend": "qwen3-tts",
+  "tts_model_name": "Qwen3-TTS-12Hz-1.7B-CustomVoice",
+  "speaker": "Ono_Anna",
+  "release_policy_version": "human-approved-release-gate-v1",
+  "release_policy_fingerprint_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+}

@@ -5,11 +5,18 @@ __pycache__/
 .venv/
 .venv-tts/
 venv/
+.env
+*.env
+.env.*
+!.env.example
+.vscode/
+.idea/
 dist/
 build/
 work/
 outputs/
 .cache/
+cache/
 
 # Local speech data and generated artifacts. Small fixtures under tests/ remain trackable.
 data/audio/
@@ -21,7 +28,21 @@ data/reports/
 models/
 checkpoints/
 outputs/audio/
+*.wav
+*.mp3
+*.flac
 *.ckpt
 *.pt
 *.pth
+*.bin
 *.safetensors
+*.onnx
+*.gguf
+
+# Local credentials and private keys.
+credentials/
+credentials*.json
+secrets/
+*.token
+*.key
+*.pem
