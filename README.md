@@ -133,3 +133,9 @@ Future work may add stronger phonetic evidence, reviewer identity integration, r
 - [Stage 10A pronunciation regression](docs/stage10a_pronunciation_regression.md)
 - [Stage 10B human review and release](docs/stage10b_human_review_release.md)
 - [Diagnostic utilities](tools/diagnostics/README.md)
+
+## License
+
+Copyright 2026 Guozheng Li.
+
+Licensed under the Apache License, Version 2.0. See `LICENSE` for details.
