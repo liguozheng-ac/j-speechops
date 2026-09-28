@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 import pytest
+import soundfile as sf
 
 from j_speech_ops.tts_synthesis import (
     Qwen3TTSRuntimeAdapter,
@@ -59,3 +60,7 @@ def test_qwen3_tts_stage8_worker_generates_japanese_wav(tmp_path: Path) -> None:
     validation = validate_generated_wav(output)
     assert validation.sample_rate_hz > 0
     assert validation.duration_sec > 0
+    audio, sample_rate = sf.read(output, dtype="float32", always_2d=True)
+    expected_post_roll_frames = round(sample_rate * 300 / 1000)
+    assert expected_post_roll_frames == 7_200
+    assert (audio[-expected_post_roll_frames:] == 0.0).all()

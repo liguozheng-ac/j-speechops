@@ -6,6 +6,8 @@ import argparse
 from pathlib import Path
 
 from .tts_synthesis import (
+    DEFAULT_POST_ROLL_MS,
+    AudioPostProcessingPolicy,
     Qwen3TTSRuntimeAdapter,
     SynthesisConfig,
     TTSSynthesisPipeline,
@@ -32,6 +34,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=PROJECT_ROOT / ".venv-tts" / "Scripts" / "python.exe",
     )
     parser.add_argument("--base-seed", type=int, default=20260921)
+    parser.add_argument(
+        "--post-roll-ms",
+        type=int,
+        default=DEFAULT_POST_ROLL_MS,
+        help="zero-valued tail padding after inference (default: 300)",
+    )
     parser.add_argument("--force", action="store_true")
     return parser
 
@@ -39,7 +47,11 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     config = SynthesisConfig(
-        model_path=str(args.model_path.resolve()), base_seed=args.base_seed
+        model_path=str(args.model_path.resolve()),
+        base_seed=args.base_seed,
+        audio_post_processing=AudioPostProcessingPolicy(
+            duration_ms=args.post_roll_ms
+        ),
     )
     outputs = TTSSynthesisPipeline(
         output_root=args.output_dir,

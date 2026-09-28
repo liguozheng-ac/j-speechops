@@ -21,6 +21,9 @@ synthesis_ready_text_samples.jsonl
       .venv-tts Qwen runtime worker
                     |
                     v
+       zero-valued tail padding
+                    |
+                    v
       WAV validation + SHA-256
                     |
        +------------+-------------+
@@ -31,7 +34,7 @@ synthesis_runs.jsonl   generated_audio_manifest.jsonl
 
 ## One text to many runs
 
-`TTSTextSample` remains unchanged at `CURATED + PASS`. Every synthesis attempt is a separate `SynthesisRun`, keyed by a stable `run_id` and linked through `sample_id`. Changing the backend, model, speaker, effective configuration, seed, strategy, or actual synthesis text produces a distinct identity. Existing valid successful runs are skipped by default; `--force` allows regeneration.
+`TTSTextSample` remains unchanged at `CURATED + PASS`. Every synthesis attempt is a separate `SynthesisRun`, keyed by a stable `run_id` and linked through `sample_id`. Changing the backend, model, speaker, effective configuration, audio post-processing policy, seed, strategy, or actual synthesis text produces a distinct identity. Existing valid successful runs are skipped by default; `--force` allows regeneration.
 
 This separation permits future backends and voices without adding synthesis fields or a `SYNTHESIZED` state to the text lifecycle.
 
@@ -70,8 +73,9 @@ The worker loads the model once, validates CUDA/BF16/language/speaker, then proc
 - `subtalker_dosample=true`
 - `subtalker_top_k=50`, `subtalker_top_p=1.0`, `subtalker_temperature=0.9`
 - `max_new_tokens=8192`
+- Post-roll: `tail_padding`, 300 ms by default, policy `tail-padding-v1`
 
-These values were inspected from the installed qwen-tts merge logic and the local checkpoint `generation_config.json`, then pinned explicitly in `GenerationParameters`.
+The inference values were inspected from the installed qwen-tts merge logic and the local checkpoint `generation_config.json`, then pinned explicitly in `GenerationParameters`. Post-roll is deterministic audio post-processing after model inference and does not change these generation parameters.
 
 ## Seed and determinism
 
@@ -86,7 +90,7 @@ This is provenance determinism: the same input identity, configuration, strategy
 - `tts_generation_summary.json`: counts plus batch model-load/GPU/peak-memory measurements.
 - `audio/<run_id>.wav`: model-native sample-rate audio.
 
-Validation requires a present, nonempty, decodable WAV with positive sample rate, channel count, and duration, finite samples, and non-silent content. Every success records SHA-256, generation time, audio duration, and RTF.
+Validation requires a present, nonempty, decodable WAV with positive sample rate, channel count, and duration, finite samples, and non-silent content. Every success records SHA-256, generation time, audio duration, RTF, and post-processing provenance (`type`, `duration_ms`, policy version, and policy fingerprint).
 
 ## CLI
 
@@ -101,6 +105,8 @@ Validation requires a present, nonempty, decodable WAV with positive sample rate
 ```
 
 Use `--force` to regenerate the same run identity. The model path is operational configuration and is not hardcoded in canonical source data.
+
+`--post-roll-ms` accepts any non-negative integer. `0` disables added silence; `100`, `300`, and `500` select those durations without changing inference. See `stage8_post_roll_policy.md` for exact semantics.
 
 ## Performance limitation
 

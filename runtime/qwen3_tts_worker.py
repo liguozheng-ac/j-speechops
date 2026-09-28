@@ -12,6 +12,26 @@ import traceback
 from pathlib import Path
 
 
+def append_tail_padding(waveform, sample_rate: int, duration_ms: int):
+    """Return the original samples followed by an exact zero-valued tail."""
+
+    import numpy as np
+
+    if sample_rate <= 0:
+        raise ValueError("sample rate must be positive")
+    if duration_ms < 0:
+        raise ValueError("tail padding duration must not be negative")
+    audio = np.asarray(waveform)
+    if audio.ndim not in {1, 2} or audio.shape[0] == 0:
+        raise ValueError(f"unsupported waveform shape: {audio.shape}")
+    padding_frames = round(sample_rate * duration_ms / 1000)
+    if padding_frames == 0:
+        return audio.copy()
+    padding_shape = (padding_frames, *audio.shape[1:])
+    padding = np.zeros(padding_shape, dtype=audio.dtype)
+    return np.concatenate((audio, padding), axis=0)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run one isolated Qwen3-TTS batch")
     parser.add_argument("--job", required=True, type=Path)
@@ -49,6 +69,19 @@ def run(job_path: Path, result_path: Path) -> int:
             raise ValueError("Stage 8 baseline requires SDPA")
         if job.get("instruct") is not None:
             raise ValueError("Stage 8 baseline does not permit style instructions")
+        post_processing = job["audio_post_processing"]
+        if post_processing["type"] != "tail_padding":
+            raise ValueError(
+                f"unsupported audio post-processing: {post_processing['type']}"
+            )
+        if post_processing["policy_version"] != "tail-padding-v1":
+            raise ValueError(
+                "unsupported audio post-processing policy version: "
+                f"{post_processing['policy_version']}"
+            )
+        post_roll_ms = int(post_processing["duration_ms"])
+        if post_roll_ms < 0:
+            raise ValueError("tail padding duration must not be negative")
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA is unavailable; CPU fallback is forbidden")
         if not torch.cuda.is_bf16_supported():
@@ -107,7 +140,15 @@ def run(job_path: Path, result_path: Path) -> int:
                 generation_time = time.perf_counter() - started
                 if len(wavs) != 1:
                     raise RuntimeError(f"expected one waveform, received {len(wavs)}")
-                sf.write(temporary_path, wavs[0], sample_rate, subtype="PCM_16")
+                processed_waveform = append_tail_padding(
+                    wavs[0], sample_rate, post_roll_ms
+                )
+                sf.write(
+                    temporary_path,
+                    processed_waveform,
+                    sample_rate,
+                    subtype="PCM_16",
+                )
                 os.replace(temporary_path, output_path)
                 results.append(
                     {

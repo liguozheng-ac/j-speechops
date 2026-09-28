@@ -21,6 +21,9 @@ from j_speech_ops.text_preparation import (
     write_text_preparation_reports,
 )
 from j_speech_ops.tts_synthesis import (
+    AUDIO_POST_PROCESSING_POLICY_VERSION,
+    AudioPostProcessingPolicy,
+    GeneratedAudioArtifact,
     Qwen3TTSRuntimeAdapter,
     RuntimeBatchJob,
     RuntimeBatchResult,
@@ -273,6 +276,28 @@ def test_seed_and_run_identity_capture_seed_speaker_and_config() -> None:
     assert config_fingerprint(first) != config_fingerprint(other_speaker)
 
 
+def test_post_roll_policy_defaults_and_changes_run_identity() -> None:
+    default = SynthesisConfig(model_path="D:/models/qwen")
+    disabled = default.model_copy(
+        update={"audio_post_processing": AudioPostProcessingPolicy(duration_ms=0)}
+    )
+    extended = default.model_copy(
+        update={"audio_post_processing": AudioPostProcessingPolicy(duration_ms=500)}
+    )
+    assert default.audio_post_processing.duration_ms == 300
+    assert default.audio_post_processing.policy_version == (
+        AUDIO_POST_PROCESSING_POLICY_VERSION
+    )
+    seed = derive_seed("sample", default.base_seed)
+    identities = {
+        build_run_id(
+            sample_id="sample", config=config, seed=seed, synthesis_text="本文"
+        )
+        for config in (disabled, default, extended)
+    }
+    assert len(identities) == 3
+
+
 def test_runtime_request_round_trip() -> None:
     payload = RuntimeBatchJob(
         backend="fake",
@@ -301,6 +326,14 @@ def test_one_text_produces_valid_run_artifact_and_manifests(tmp_path: Path) -> N
     assert runs[0].synthesis_text == sample.text.normalized_text
     assert runs[0].expected_reading_kana == sample.text.reading_kana
     assert runs[0].audio_sha256
+    assert runs[0].audio_post_processing is not None
+    assert runs[0].audio_post_processing.type == "tail_padding"
+    assert runs[0].audio_post_processing.duration_ms == 300
+    assert len(runs[0].audio_post_processing.policy_fingerprint_sha256) == 64
+    artifact = GeneratedAudioArtifact.model_validate_json(
+        outputs.generated_audio_manifest.read_text(encoding="utf-8")
+    )
+    assert artifact.audio_post_processing == runs[0].audio_post_processing
     assert outputs.generated_audio_manifest.read_text(encoding="utf-8").count("\n") == 1
     assert outputs.summary.succeeded_runs == 1
 

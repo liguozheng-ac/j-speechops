@@ -43,6 +43,9 @@ from .tts_text_curation import (
 SYNTHESIS_SCHEMA_VERSION = "1.0"
 SYNTHESIS_TEXT_STRATEGY = "normalized-with-confirmed-overrides-v1"
 SEED_POLICY = "sha256-sample-id-plus-base-mod-2147483647-v1"
+AUDIO_POST_PROCESSING_POLICY_VERSION = "tail-padding-v1"
+AUDIO_POST_PROCESSING_TYPE = "tail_padding"
+DEFAULT_POST_ROLL_MS = 300
 NonEmptyStr = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
 
@@ -65,6 +68,20 @@ class GenerationParameters(SynthesisModel):
     max_new_tokens: int = Field(default=8192, gt=0)
 
 
+class AudioPostProcessingPolicy(SynthesisModel):
+    """Deterministic processing applied after inference and before WAV export."""
+
+    type: Literal[AUDIO_POST_PROCESSING_TYPE] = AUDIO_POST_PROCESSING_TYPE
+    duration_ms: int = Field(default=DEFAULT_POST_ROLL_MS, ge=0)
+    policy_version: Literal[AUDIO_POST_PROCESSING_POLICY_VERSION] = (
+        AUDIO_POST_PROCESSING_POLICY_VERSION
+    )
+
+
+class AudioPostProcessingProvenance(AudioPostProcessingPolicy):
+    policy_fingerprint_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
 class SynthesisConfig(SynthesisModel):
     backend: NonEmptyStr = "qwen3-tts"
     model_name: NonEmptyStr = "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"
@@ -78,6 +95,9 @@ class SynthesisConfig(SynthesisModel):
     non_streaming_mode: Literal[True] = True
     generation_parameters: GenerationParameters = Field(
         default_factory=GenerationParameters
+    )
+    audio_post_processing: AudioPostProcessingPolicy = Field(
+        default_factory=AudioPostProcessingPolicy
     )
     base_seed: int = Field(default=20260921, ge=0, lt=2_147_483_647)
     seed_policy: Literal[SEED_POLICY] = SEED_POLICY
@@ -131,6 +151,9 @@ class RuntimeBatchJob(SynthesisModel):
     instruct: None = None
     non_streaming_mode: Literal[True] = True
     generation_parameters: GenerationParameters
+    audio_post_processing: AudioPostProcessingPolicy = Field(
+        default_factory=AudioPostProcessingPolicy
+    )
     requests: tuple[RuntimeSynthesisRequest, ...]
 
 
@@ -180,6 +203,7 @@ class SynthesisRun(SynthesisModel):
     dtype: NonEmptyStr
     attention_implementation: NonEmptyStr
     generation_parameters: GenerationParameters
+    audio_post_processing: AudioPostProcessingProvenance | None = None
     config_fingerprint_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     seed: int = Field(ge=0, lt=2_147_483_647)
     seed_policy: Literal[SEED_POLICY] = SEED_POLICY
@@ -242,6 +266,7 @@ class GeneratedAudioArtifact(SynthesisModel):
     model_name: NonEmptyStr
     speaker: NonEmptyStr
     language: NonEmptyStr
+    audio_post_processing: AudioPostProcessingProvenance | None = None
     sample_rate_hz: int = Field(gt=0)
     channels: int = Field(gt=0)
     duration_sec: float = Field(gt=0.0)
@@ -359,6 +384,21 @@ def config_fingerprint(config: SynthesisConfig) -> str:
 
     payload = config.model_dump(exclude={"model_path"}, mode="json")
     return _canonical_sha256(payload)
+
+
+def audio_post_processing_policy_fingerprint(
+    policy: AudioPostProcessingPolicy,
+) -> str:
+    return _canonical_sha256(policy.model_dump(mode="json"))
+
+
+def audio_post_processing_provenance(
+    policy: AudioPostProcessingPolicy,
+) -> AudioPostProcessingProvenance:
+    return AudioPostProcessingProvenance(
+        **policy.model_dump(mode="python"),
+        policy_fingerprint_sha256=audio_post_processing_policy_fingerprint(policy),
+    )
 
 
 def derive_seed(sample_id: str, base_seed: int) -> int:
@@ -542,6 +582,9 @@ class TTSSynthesisPipeline:
         self.config = config
         self.runtime_adapter = runtime_adapter
         self.fingerprint = config_fingerprint(config)
+        self.post_processing = audio_post_processing_provenance(
+            config.audio_post_processing
+        )
 
     def run(
         self,
@@ -665,6 +708,7 @@ class TTSSynthesisPipeline:
                 instruct=self.config.instruct,
                 non_streaming_mode=self.config.non_streaming_mode,
                 generation_parameters=self.config.generation_parameters,
+                audio_post_processing=self.config.audio_post_processing,
                 requests=tuple(
                     RuntimeSynthesisRequest(
                         run_id=run_id,
@@ -737,6 +781,7 @@ class TTSSynthesisPipeline:
                     dtype=self.config.dtype,
                     attention_implementation=self.config.attention_implementation,
                     generation_parameters=self.config.generation_parameters,
+                    audio_post_processing=self.post_processing,
                     config_fingerprint_sha256=self.fingerprint,
                     seed=seed,
                     normalized_text=plan.normalized_text,
@@ -893,6 +938,7 @@ class TTSSynthesisPipeline:
             "dtype": self.config.dtype,
             "attention_implementation": self.config.attention_implementation,
             "generation_parameters": self.config.generation_parameters,
+            "audio_post_processing": self.post_processing,
             "config_fingerprint_sha256": self.fingerprint,
             "seed": seed,
             "normalized_text": normalized_text,
@@ -962,6 +1008,7 @@ class TTSSynthesisPipeline:
             model_name=run.model_name,
             speaker=run.speaker,
             language=run.language,
+            audio_post_processing=run.audio_post_processing,
             sample_rate_hz=run.sample_rate_hz or 0,
             channels=run.channels or 0,
             duration_sec=run.duration_sec or 0.0,
