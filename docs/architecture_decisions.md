@@ -412,4 +412,34 @@ The documented top-level boundaries are:
 
 **Decision:** Produce review-compatible evidence and regression routing only. Do not add APPROVE/REWORK/REJECT or release lifecycle states.
 
-**Rationale:** Human judgment and release authority belong to the future Stage 10B boundary.
+**Rationale:** Human judgment and release authority belong to the downstream Stage 10B boundary, not to pronunciation evidence construction.
+
+## ADR 69 — Human review is mandatory and independent
+
+**Decision:** Require an explicit `HumanReviewRecord` for every release candidate even when Stage 9 passes and Stage 10A detects no regression. Keep APPROVE separate from RELEASED.
+
+**Rationale:** The current machine evidence does not evaluate naturalness, prosody, pitch accent, or overall listening acceptability and therefore cannot assume human authority.
+
+## ADR 70 — Human decisions bind to an exact review context
+
+**Decision:** Fingerprint artifact identity, text, override provenance, Stage 9 and Stage 10A evidence, regression identity, synthesis configuration, and review policy. Treat a review with any mismatch as stale.
+
+**Rationale:** Reusing approval after regeneration or evidence changes would approve an artifact the reviewer did not actually assess.
+
+## ADR 71 — Release gate remains a separate object lifecycle
+
+**Decision:** Represent gate results and released artifacts separately from `GeneratedAudioArtifact`, Stage 9 QA, Stage 10A evidence, and human-review records.
+
+**Rationale:** Generation, machine QA, human judgment, and release authorization have different evidence and audit responsibilities.
+
+## ADR 72 — Release has no bypass or invented quality metric
+
+**Decision:** Provide no force-release path and no numeric human-quality, pronunciation, naturalness, confidence, MOS, or pitch-accent score. Use structured decisions, reason codes, and provenance.
+
+**Rationale:** A convenience bypass would defeat mandatory review, while uncalibrated numbers would imply evidence the system does not possess.
+
+## ADR 73 — Machine REVIEW is human-resolvable; artifact failure is not
+
+**Decision:** Convert Stage 9 content REVIEW, Stage 10A pronunciation REVIEW, and regression REVIEW evidence into stable `MachineReviewIssue` identities. Permit release only when a fresh human APPROVE explicitly resolves every such identity. Keep missing, corrupt, silent, hash-invalid, invalid-WAV, failed-QA, and DROP states as non-overridable hard blockers.
+
+**Rationale:** REVIEW means machine uncertainty routed to a qualified person, not objective invalidity. Conversely, a human content judgment cannot repair a physically invalid or provenance-inconsistent artifact.

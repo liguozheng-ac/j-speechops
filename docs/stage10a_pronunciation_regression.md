@@ -100,7 +100,7 @@ Compare current evidence:
 - `pronunciation_regression_review_candidates.jsonl`
 - `pronunciation_regression_summary.json`
 
-All outputs are deterministic, machine-readable, and include identifiers needed by a future Stage 10B human-review workflow.
+All outputs are deterministic, machine-readable, and include identifiers consumed by the downstream Stage 10B human-review workflow.
 
 ## Limitations
 
@@ -110,5 +110,4 @@ All outputs are deterministic, machine-readable, and include identifiers needed 
 - Canonical substring presence is not time-aligned phonetic evidence.
 - Whisper and OpenJTalk remain fallible evidence sources.
 - No human approval has occurred.
-- No Human Review UI or release gate is implemented.
-
+- The Stage 10A component itself performs no human approval or release; those remain separate Stage 10B objects.
