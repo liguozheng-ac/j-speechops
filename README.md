@@ -1,5 +1,7 @@
 # J-SpeechOps
 
+[![Core tests](https://github.com/liguozheng-ac/j-speechops/actions/workflows/test.yml/badge.svg)](https://github.com/liguozheng-ac/j-speechops/actions/workflows/test.yml)
+
 Japanese Speech Data Quality Control and Release Pipeline
 
 ## Overview
@@ -17,7 +19,7 @@ This is a production-oriented prototype for controlled batch workflows, not a de
 On Windows with Python 3.14, clone the repository and verify the Core package without a GPU or model weights:
 
 ```powershell
-git clone <repository-url> J-SpeechOps
+git clone https://github.com/liguozheng-ac/j-speechops.git J-SpeechOps
 cd J-SpeechOps
 py -3.14 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --upgrade pip
@@ -138,4 +140,4 @@ Future work may add stronger phonetic evidence, reviewer identity integration, r
 
 Copyright 2026 Guozheng Li.
 
-Licensed under the Apache License, Version 2.0. See `LICENSE` for details.
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
