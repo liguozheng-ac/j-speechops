@@ -34,7 +34,7 @@ py -3.14 -m venv .venv
 
 ## 系统架构
 
-![J-SpeechOps 架构图：独立的源语音数据流程，以及从日语文本到语音生成、质量证据、人工审核和发布的流程](docs/images/j-speechops-architecture.svg)
+![J-SpeechOps 架构图：独立的源语音数据流程，以及从日语文本到语音生成、质量证据、人工审核和发布的流程](docs/images/j-speechops-architecture.zh-CN.svg)
 
 系统边界和设计原则见[架构概览](docs/architecture_overview.md)。
 

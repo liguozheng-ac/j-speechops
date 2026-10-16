@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">J-SpeechOps 系统架构</title>
+  <desc id="desc">两条独立的输入路径：源录音经过音频预处理、语音活动检测、日语语音识别和语音数据筛选；日语文本经过文本准备、TTS 文本筛选、带尾部补静音的 Qwen3-TTS、生成音频质检、发音证据、人工审核和发布门禁。</desc>
+  <defs>
+    <style>
+      .title { font: 700 34px "Microsoft YaHei", "Noto Sans CJK SC", "PingFang SC", sans-serif; fill: #17243b; }
+      .subtitle { font: 400 18px "Microsoft YaHei", "Noto Sans CJK SC", "PingFang SC", sans-serif; fill: #5b6b82; }
+      .section { font: 700 21px "Microsoft YaHei", "Noto Sans CJK SC", "PingFang SC", sans-serif; fill: #25344b; letter-spacing: 0.6px; }
+      .hint { font: 400 16px "Microsoft YaHei", "Noto Sans CJK SC", "PingFang SC", sans-serif; fill: #60718a; }
+      .label { font: 700 19px "Microsoft YaHei", "Noto Sans CJK SC", "PingFang SC", sans-serif; fill: #17243b; }
+      .detail { font: 400 15px "Microsoft YaHei", "Noto Sans CJK SC", "PingFang SC", sans-serif; fill: #52637c; }
+      .speechBand { fill: #f3f8ff; stroke: #d5e6f8; stroke-width: 2; }
+      .ttsBand { fill: #f1faf7; stroke: #d0ede2; stroke-width: 2; }
+      .qualityBand { fill: #f8f5ff; stroke: #e4daf7; stroke-width: 2; }
+      .speechCard { fill: #fff; stroke: #80afe0; stroke-width: 2; }
+      .ttsCard { fill: #fff; stroke: #65b79d; stroke-width: 2; }
+      .qualityCard { fill: #fff; stroke: #a891d7; stroke-width: 2; }
+      .humanCard { fill: #fff8e8; stroke: #d5a44e; stroke-width: 2; }
+      .releaseCard { fill: #edf9f1; stroke: #62ae7b; stroke-width: 2; }
+      .arrow { fill: none; stroke: #718198; stroke-width: 3; marker-end: url(#arrowHead); }
+    </style>
+    <marker id="arrowHead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#718198"/>
+    </marker>
+  </defs>
+
+  <rect width="1440" height="900" fill="#fff"/>
+  <text x="40" y="55" class="title">J-SpeechOps 系统架构</text>
+  <text x="40" y="84" class="subtitle">语音数据与 TTS 独立输入；基于证据的质量控制与发布</text>
+
+  <rect x="24" y="109" width="1392" height="218" rx="20" class="speechBand"/>
+  <text x="48" y="145" class="section">01  源语音数据</text>
+  <text x="1390" y="145" text-anchor="end" class="hint">独立输入路径</text>
+
+  <rect x="40" y="172" width="224" height="116" rx="16" class="speechCard"/>
+  <text x="152" y="218" text-anchor="middle" class="label">源录音</text>
+  <text x="152" y="247" text-anchor="middle" class="detail">原始 WAV 文件</text>
+  <rect x="324" y="172" width="224" height="116" rx="16" class="speechCard"/>
+  <text x="436" y="209" text-anchor="middle" class="label">音频预处理</text>
+  <text x="436" y="238" text-anchor="middle" class="detail">验证 / 16 kHz</text>
+  <text x="436" y="260" text-anchor="middle" class="detail">单声道 PCM</text>
+  <rect x="608" y="172" width="224" height="116" rx="16" class="speechCard"/>
+  <text x="720" y="218" text-anchor="middle" class="label">Silero 语音活动检测</text>
+  <text x="720" y="247" text-anchor="middle" class="detail">片段来源追溯</text>
+  <rect x="892" y="172" width="224" height="116" rx="16" class="speechCard"/>
+  <text x="1004" y="218" text-anchor="middle" class="label">日语语音识别</text>
+  <text x="1004" y="247" text-anchor="middle" class="detail">faster-whisper</text>
+  <rect x="1176" y="172" width="224" height="116" rx="16" class="speechCard"/>
+  <text x="1288" y="209" text-anchor="middle" class="label">语音数据筛选</text>
+  <text x="1288" y="238" text-anchor="middle" class="detail">通过 / 复核 / 剔除</text>
+  <text x="1288" y="260" text-anchor="middle" class="detail">仅导出通过项</text>
+  <path d="M264 230 H315" class="arrow"/>
+  <path d="M548 230 H599" class="arrow"/>
+  <path d="M832 230 H883" class="arrow"/>
+  <path d="M1116 230 H1167" class="arrow"/>
+
+  <rect x="24" y="349" width="1392" height="218" rx="20" class="ttsBand"/>
+  <text x="48" y="385" class="section">02  TTS 语音生产</text>
+  <text x="1390" y="385" text-anchor="end" class="hint">独立文本输入</text>
+
+  <rect x="40" y="412" width="224" height="116" rx="16" class="ttsCard"/>
+  <text x="152" y="458" text-anchor="middle" class="label">日语文本</text>
+  <text x="152" y="487" text-anchor="middle" class="detail">源文本记录</text>
+  <rect x="324" y="412" width="224" height="116" rx="16" class="ttsCard"/>
+  <text x="436" y="449" text-anchor="middle" class="label">文本准备</text>
+  <text x="436" y="478" text-anchor="middle" class="detail">规范化 / 读音</text>
+  <text x="436" y="500" text-anchor="middle" class="detail">OpenJTalk 证据</text>
+  <rect x="608" y="412" width="224" height="116" rx="16" class="ttsCard"/>
+  <text x="720" y="458" text-anchor="middle" class="label">TTS 文本筛选</text>
+  <text x="720" y="487" text-anchor="middle" class="detail">权利 / 风险分流</text>
+  <rect x="892" y="412" width="224" height="116" rx="16" class="ttsCard"/>
+  <text x="1004" y="449" text-anchor="middle" class="label">语音生成</text>
+  <text x="1004" y="478" text-anchor="middle" class="detail">Qwen3-TTS 运行环境</text>
+  <text x="1004" y="500" text-anchor="middle" class="detail">尾部补 300 毫秒零值静音</text>
+  <rect x="1176" y="412" width="224" height="116" rx="16" class="ttsCard"/>
+  <text x="1288" y="458" text-anchor="middle" class="label">音频产物</text>
+  <text x="1288" y="487" text-anchor="middle" class="detail">WAV / SHA-256 / 策略</text>
+  <path d="M264 470 H315" class="arrow"/>
+  <path d="M548 470 H599" class="arrow"/>
+  <path d="M832 470 H883" class="arrow"/>
+  <path d="M1116 470 H1167" class="arrow"/>
+
+  <rect x="24" y="589" width="1392" height="241" rx="20" class="qualityBand"/>
+  <text x="48" y="625" class="section">03  质量控制与发布</text>
+  <text x="1390" y="625" text-anchor="end" class="hint">从生成的音频产物继续，按箭头从右向左阅读</text>
+  <path d="M1288 528 V667" class="arrow"/>
+
+  <rect x="1176" y="670" width="224" height="116" rx="16" class="qualityCard"/>
+  <text x="1288" y="716" text-anchor="middle" class="label">音频质检</text>
+  <text x="1288" y="745" text-anchor="middle" class="detail">完整性 / Whisper</text>
+  <rect x="892" y="670" width="224" height="116" rx="16" class="qualityCard"/>
+  <text x="1004" y="707" text-anchor="middle" class="label">发音证据</text>
+  <text x="1004" y="736" text-anchor="middle" class="detail">证据 / 回归检测</text>
+  <text x="1004" y="758" text-anchor="middle" class="detail">不确定时转人工复核</text>
+  <rect x="608" y="670" width="224" height="116" rx="16" class="humanCard"/>
+  <text x="720" y="707" text-anchor="middle" class="label">人工审核</text>
+  <text x="720" y="736" text-anchor="middle" class="detail">批准 / 返工</text>
+  <text x="720" y="758" text-anchor="middle" class="detail">拒绝</text>
+  <rect x="324" y="670" width="224" height="116" rx="16" class="qualityCard"/>
+  <text x="436" y="716" text-anchor="middle" class="label">发布门禁</text>
+  <text x="436" y="745" text-anchor="middle" class="detail">时效性 / 阻断项</text>
+  <rect x="40" y="670" width="224" height="116" rx="16" class="releaseCard"/>
+  <text x="152" y="707" text-anchor="middle" class="label">已发布音频</text>
+  <text x="152" y="736" text-anchor="middle" class="detail">清单 / 来源追溯</text>
+  <text x="152" y="758" text-anchor="middle" class="detail">仅门禁通过后发布</text>
+  <path d="M1176 728 H1125" class="arrow"/>
+  <path d="M892 728 H841" class="arrow"/>
+  <path d="M608 728 H557" class="arrow"/>
+  <path d="M324 728 H273" class="arrow"/>
+
+  <text x="40" y="869" class="hint">机器证据不等于人工批准。客观产物故障不可由普通人工批准覆盖。模型权重和生成的 WAV 不纳入 Git。</text>
+</svg>
