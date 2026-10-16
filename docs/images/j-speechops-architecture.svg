@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">J-SpeechOps system architecture</title>
+  <desc id="desc">Two independent entry paths: source recordings pass through audio preparation, VAD, Japanese ASR, and speech curation; Japanese text passes through preparation, TTS text curation, Qwen3-TTS with post-roll, generated-audio QA, pronunciation evidence, human review, and a release gate.</desc>
+  <defs>
+    <style>
+      .title { font: 700 34px Arial, Helvetica, sans-serif; fill: #17243b; }
+      .subtitle { font: 400 18px Arial, Helvetica, sans-serif; fill: #5b6b82; }
+      .section { font: 700 21px Arial, Helvetica, sans-serif; fill: #25344b; letter-spacing: 0.6px; }
+      .hint { font: 400 16px Arial, Helvetica, sans-serif; fill: #60718a; }
+      .label { font: 700 19px Arial, Helvetica, sans-serif; fill: #17243b; }
+      .detail { font: 400 15px Arial, Helvetica, sans-serif; fill: #52637c; }
+      .speechBand { fill: #f3f8ff; stroke: #d5e6f8; stroke-width: 2; }
+      .ttsBand { fill: #f1faf7; stroke: #d0ede2; stroke-width: 2; }
+      .qualityBand { fill: #f8f5ff; stroke: #e4daf7; stroke-width: 2; }
+      .speechCard { fill: #fff; stroke: #80afe0; stroke-width: 2; }
+      .ttsCard { fill: #fff; stroke: #65b79d; stroke-width: 2; }
+      .qualityCard { fill: #fff; stroke: #a891d7; stroke-width: 2; }
+      .humanCard { fill: #fff8e8; stroke: #d5a44e; stroke-width: 2; }
+      .releaseCard { fill: #edf9f1; stroke: #62ae7b; stroke-width: 2; }
+      .arrow { fill: none; stroke: #718198; stroke-width: 3; marker-end: url(#arrowHead); }
+    </style>
+    <marker id="arrowHead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#718198"/>
+    </marker>
+  </defs>
+
+  <rect width="1440" height="900" fill="#fff"/>
+  <text x="40" y="55" class="title">J-SpeechOps Architecture</text>
+  <text x="40" y="84" class="subtitle">Independent speech-data and TTS entry paths; evidence-driven quality and release</text>
+
+  <rect x="24" y="109" width="1392" height="218" rx="20" class="speechBand"/>
+  <text x="48" y="145" class="section">01  SOURCE SPEECH DATA</text>
+  <text x="1390" y="145" text-anchor="end" class="hint">Independent input path</text>
+
+  <rect x="40" y="172" width="224" height="116" rx="16" class="speechCard"/>
+  <text x="152" y="218" text-anchor="middle" class="label">Recordings</text>
+  <text x="152" y="247" text-anchor="middle" class="detail">Source WAVs</text>
+  <rect x="324" y="172" width="224" height="116" rx="16" class="speechCard"/>
+  <text x="436" y="209" text-anchor="middle" class="label">Audio preparation</text>
+  <text x="436" y="238" text-anchor="middle" class="detail">Validation / 16 kHz</text>
+  <text x="436" y="260" text-anchor="middle" class="detail">mono PCM</text>
+  <rect x="608" y="172" width="224" height="116" rx="16" class="speechCard"/>
+  <text x="720" y="218" text-anchor="middle" class="label">Silero VAD</text>
+  <text x="720" y="247" text-anchor="middle" class="detail">Segment lineage</text>
+  <rect x="892" y="172" width="224" height="116" rx="16" class="speechCard"/>
+  <text x="1004" y="218" text-anchor="middle" class="label">Japanese ASR</text>
+  <text x="1004" y="247" text-anchor="middle" class="detail">faster-whisper</text>
+  <rect x="1176" y="172" width="224" height="116" rx="16" class="speechCard"/>
+  <text x="1288" y="209" text-anchor="middle" class="label">Speech curation</text>
+  <text x="1288" y="238" text-anchor="middle" class="detail">PASS / REVIEW / DROP</text>
+  <text x="1288" y="260" text-anchor="middle" class="detail">PASS-only export</text>
+  <path d="M264 230 H315" class="arrow"/>
+  <path d="M548 230 H599" class="arrow"/>
+  <path d="M832 230 H883" class="arrow"/>
+  <path d="M1116 230 H1167" class="arrow"/>
+
+  <rect x="24" y="349" width="1392" height="218" rx="20" class="ttsBand"/>
+  <text x="48" y="385" class="section">02  TTS PRODUCTION</text>
+  <text x="1390" y="385" text-anchor="end" class="hint">Independent text input</text>
+
+  <rect x="40" y="412" width="224" height="116" rx="16" class="ttsCard"/>
+  <text x="152" y="458" text-anchor="middle" class="label">Japanese text</text>
+  <text x="152" y="487" text-anchor="middle" class="detail">Source records</text>
+  <rect x="324" y="412" width="224" height="116" rx="16" class="ttsCard"/>
+  <text x="436" y="449" text-anchor="middle" class="label">Text preparation</text>
+  <text x="436" y="478" text-anchor="middle" class="detail">Normalization / reading</text>
+  <text x="436" y="500" text-anchor="middle" class="detail">OpenJTalk evidence</text>
+  <rect x="608" y="412" width="224" height="116" rx="16" class="ttsCard"/>
+  <text x="720" y="458" text-anchor="middle" class="label">TTS text curation</text>
+  <text x="720" y="487" text-anchor="middle" class="detail">Rights / risk routing</text>
+  <rect x="892" y="412" width="224" height="116" rx="16" class="ttsCard"/>
+  <text x="1004" y="449" text-anchor="middle" class="label">TTS generation</text>
+  <text x="1004" y="478" text-anchor="middle" class="detail">Qwen3-TTS runtime</text>
+  <text x="1004" y="500" text-anchor="middle" class="detail">300 ms zero post-roll</text>
+  <rect x="1176" y="412" width="224" height="116" rx="16" class="ttsCard"/>
+  <text x="1288" y="458" text-anchor="middle" class="label">Audio artifact</text>
+  <text x="1288" y="487" text-anchor="middle" class="detail">WAV / SHA-256 / policy</text>
+  <path d="M264 470 H315" class="arrow"/>
+  <path d="M548 470 H599" class="arrow"/>
+  <path d="M832 470 H883" class="arrow"/>
+  <path d="M1116 470 H1167" class="arrow"/>
+
+  <rect x="24" y="589" width="1392" height="241" rx="20" class="qualityBand"/>
+  <text x="48" y="625" class="section">03  QUALITY AND RELEASE</text>
+  <text x="1390" y="625" text-anchor="end" class="hint">Continues from generated artifact; follow arrows right to left</text>
+  <path d="M1288 528 V667" class="arrow"/>
+
+  <rect x="1176" y="670" width="224" height="116" rx="16" class="qualityCard"/>
+  <text x="1288" y="716" text-anchor="middle" class="label">Audio QA</text>
+  <text x="1288" y="745" text-anchor="middle" class="detail">Integrity / Whisper</text>
+  <rect x="892" y="670" width="224" height="116" rx="16" class="qualityCard"/>
+  <text x="1004" y="707" text-anchor="middle" class="label">Pronunciation</text>
+  <text x="1004" y="736" text-anchor="middle" class="detail">Evidence / regression</text>
+  <text x="1004" y="758" text-anchor="middle" class="detail">REVIEW when uncertain</text>
+  <rect x="608" y="670" width="224" height="116" rx="16" class="humanCard"/>
+  <text x="720" y="707" text-anchor="middle" class="label">Human review</text>
+  <text x="720" y="736" text-anchor="middle" class="detail">APPROVE / REWORK</text>
+  <text x="720" y="758" text-anchor="middle" class="detail">REJECT</text>
+  <rect x="324" y="670" width="224" height="116" rx="16" class="qualityCard"/>
+  <text x="436" y="716" text-anchor="middle" class="label">Release gate</text>
+  <text x="436" y="745" text-anchor="middle" class="detail">Freshness / blockers</text>
+  <rect x="40" y="670" width="224" height="116" rx="16" class="releaseCard"/>
+  <text x="152" y="707" text-anchor="middle" class="label">Released artifact</text>
+  <text x="152" y="736" text-anchor="middle" class="detail">Manifest / provenance</text>
+  <text x="152" y="758" text-anchor="middle" class="detail">Only after gate passes</text>
+  <path d="M1176 728 H1125" class="arrow"/>
+  <path d="M892 728 H841" class="arrow"/>
+  <path d="M608 728 H557" class="arrow"/>
+  <path d="M324 728 H273" class="arrow"/>
+
+  <text x="40" y="869" class="hint">Machine evidence is not human approval. Hard artifact failures cannot be overridden. Model weights and generated WAVs stay outside Git.</text>
+</svg>

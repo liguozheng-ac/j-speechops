@@ -32,33 +32,7 @@ The three GPU integration tests are opt-in and skip by default. Whisper and Qwen
 
 ## Architecture
 
-```text
-Japanese Text
-    |
-    v
-Text Preparation and Curation
-    |
-    v
-TTS Generation
-    |
-    v
-Audio Post-processing
-    |
-    v
-GeneratedAudioArtifact
-    |
-    v
-Audio QA
-    |
-    v
-Pronunciation Evidence and Regression
-    |
-    v
-Human Review
-    |
-    v
-ReleasedAudioArtifact
-```
+![J-SpeechOps architecture: independent source-speech pipeline and Japanese text to TTS, quality evidence, human review, and release](docs/images/j-speechops-architecture.svg)
 
 See [Architecture Overview](docs/architecture_overview.md) for the system boundaries and design principles.
 
