@@ -1,5 +1,7 @@
 # J-SpeechOps
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 [![Core tests](https://github.com/liguozheng-ac/j-speechops/actions/workflows/test.yml/badge.svg)](https://github.com/liguozheng-ac/j-speechops/actions/workflows/test.yml)
 
 Japanese Speech Data Quality Control and Release Pipeline
